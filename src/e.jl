@@ -10,9 +10,8 @@ function writechanbin(
     if dest[end-3:end] != ".bin"
         dest = dest*".bin"
     end
-    open(dest, "w") do file
-        write(file, channel)            
-        close(file)
-    end   
-    println("written to: ", dest)
+    file = open(dest, "w")
+    bytes = write(file, channel)            
+    close(file)
+    println("written ", bytes, " bytes to: ", dest)
 end # writechanbin

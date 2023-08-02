@@ -94,8 +94,8 @@ function getchan(
     ch::Union{Int, Vector{Int}, UnitRange{Int64}},
     tmin::Union{Float64, Int},
     tmax::Union{Float64, Int, String},
-    converttoV::Bool = true#,
-    #threading::Bool = false
+    converttoV::Bool = true,
+    threading::Bool = false
     )
 
     filemax::Int64 = Int64(parse(Int64, p._meta["fileSizeBytes"]) / parse(Int64, p._meta["nSavedChans"]) / 2)
@@ -133,24 +133,27 @@ function getchan(
     # Memory map data and load the selected chunks
     karta::Matrix{Int16} = spikemmap(p)
     len::UnitRange{Int64} = tmin:tmax
-    it::Vector{Tuple{Int64, Int64}} = collect(enumerate(len))
+    #it::Vector{Tuple{Int64, Int64}} = collect(enumerate(len))
 
-#    if threading
-#        r::Union{Matrix{Int16}, Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
-#
-#
-#        if length(ch) > 1
-#            for (ntim, t) in it
-#                @inbounds r[ntim, :] = karta[ch, t]
-#            end 
-#        elseif length(ch) == 1
-#            for (ntim, t) in it
-#                @inbounds r[ntim, 1] = karta[ch, t]
-#            end 
-#        end
-#    else
-#        r = karta[ch, len]
-#    end
+    
+
+
+    if threading
+        r::Union{Matrix{Int16}, Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
+        t::Vector{UnitRange{Int64}} = collect(Iterators.partition(len, 10000))
+        n::Vector{UnitRange{Int64}} = collect(Iterators.partition(1:length(len), 10000))
+        it = tuple.(n, t)
+        #it = collect(enumerate(len))
+
+
+        if length(ch) > 1
+            Laska.importchx!(ch, r, karta, it)
+        elseif length(ch) == 1
+            Laska.importch1!(ch, r, karta, it)
+        end
+    else
+        r = karta[ch, len]
+    end
 
     if converttoV
         conv::Union{Matrix{Float64}, Vector{Float64}} = tovolts(p._meta, r)
@@ -160,6 +163,20 @@ function getchan(
     end
 
 end # Getchan
+
+function importchx!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Union{Matrix{Int16}, Vector{Int16}}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+    for (ntim, t) in i
+        a[ntim, :] = transpose(mm[channels, t])
+     end 
+    return a
+end
+
+function importch1!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Union{Matrix{Int16}, Vector{Int16}}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+    for (ntim, t) in i
+        a[ntim, 1] = mm[channels, t]
+    end 
+    return a
+end
 
 function spikemmap(p::PhyOutput)
     n::Int = parse(Int, p._meta["nSavedChans"])

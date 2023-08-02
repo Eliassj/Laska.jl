@@ -5,11 +5,12 @@ const dt = DataFrames
 using Gtk
 using MAT
 using NPZ
-using CairoMakie
-const plt = CairoMakie
+using GLMakie
+const plt = GLMakie
 using CSV
 using Mmap
 const mp = Mmap
+using LoopVectorization
 
 
 include("i.jl")
