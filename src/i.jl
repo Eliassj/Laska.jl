@@ -6,6 +6,7 @@ struct PhyOutput
     _info::DataFrames.DataFrame
     _meta::Dict{SubString{String}, SubString{String}}
     _binpath::String
+    _triggers::Union{Vector{Int}, Nothing}
 
     """
     PhyOutput(
@@ -24,6 +25,7 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
     function PhyOutput(
         phydir::String = "",
         glxdir::String = "",
+        triggerpath::String = "",
         same::Bool = false
     )
         if length(phydir) == 0
@@ -60,17 +62,40 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
         metaraw = split.(metaraw, "=")
         metadict = Dict(i[1] => i[2] for i in metaraw)
 
-        new(spiketimes, info, metadict, binfile)
+        # Read triggerdata
+        if triggerpath == ""
+            if Gtk.ask_dialog("No triggerpath provided, select a file?")
+                triggerpath = Gtk.open_dialog_native("Select triggerfile (.bin/.csv)", action=GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN)
+                t = importchanint16(triggerpath)
+                triggers = gettrig(t)
+            end
+            triggers = nothing
+        else
+            t = importchanint16(triggerpath)
+            triggers = gettrig(t)
+        end
+
+        new(spiketimes, info, metadict, binfile, triggers)
 
         end
 end #struct phyoutput
+
+# Extract triggers from Vector
+
+function gettrig(t::Matrix)
+    r::Vector{CartesianIndex{2}} = findall(!iszero, t)
+    p::Matrix{Int64} = hcat(getindex.(r, 1), getindex.(r-circshift(r, 1), 1))
+    s::Vector{Int64} = p[p[:,2] .!= 1, 1]
+    return s
+end
 
 function getchan(
     p::PhyOutput,
     ch::Union{Int, Vector{Int}, UnitRange{Int64}},
     tmin::Union{Float64, Int},
     tmax::Union{Float64, Int, String},
-    converttoV::Bool = true
+    converttoV::Bool = true#,
+    #threading::Bool = false
     )
 
     filemax::Int64 = Int64(parse(Int64, p._meta["fileSizeBytes"]) / parse(Int64, p._meta["nSavedChans"]) / 2)
@@ -108,8 +133,24 @@ function getchan(
     # Memory map data and load the selected chunks
     karta::Matrix{Int16} = spikemmap(p)
     len::UnitRange{Int64} = tmin:tmax
+    it::Vector{Tuple{Int64, Int64}} = collect(enumerate(len))
 
-    r::Union{Matrix{Int16}, Vector{Int16}} = karta[ch, len]
+#    if threading
+#        r::Union{Matrix{Int16}, Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
+#
+#
+#        if length(ch) > 1
+#            for (ntim, t) in it
+#                @inbounds r[ntim, :] = karta[ch, t]
+#            end 
+#        elseif length(ch) == 1
+#            for (ntim, t) in it
+#                @inbounds r[ntim, 1] = karta[ch, t]
+#            end 
+#        end
+#    else
+#        r = karta[ch, len]
+#    end
 
     if converttoV
         conv::Union{Matrix{Float64}, Vector{Float64}} = tovolts(p._meta, r)
@@ -145,7 +186,7 @@ function tovolts(meta::Dict{SubString{String}, SubString{String}}, i::Union{Vect
 end # tovolts
 
 
-function importchanint16(path::String="", format = "Int16" )
+function importchanint16(path::String="")
     if path == ""
         path = Gtk.open_dialog_native("Select trigger file", action=GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN)
     end
