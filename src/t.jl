@@ -6,18 +6,23 @@ struct relativeSpikes
     _meta::Dict{SubString{String}, SubString{String}}
     _binpath::String
     _stimulations::Union{Dict, Nothing}
-    _len::Tuple{Int64, Int64}
+    _specs::Dict
 
     function relativeSpikes(p::Laska.PhyOutput, back::Int64 = 500, forward::Int64 = 600; context::Dict = Dict())
         spikes = filtertriggers(p, back, forward)
-        context["ntrig"] = maximum(spikes[:,3])
+        ntrig = maximum(spikes[:,3])
+        specs = Dict(
+            "back" => back,
+            "forward" => forward,
+            "ntrig" => ntrig
+        )
         new(
             spikes,
             p._info,
             p._meta,
             p._binpath,
             context,
-            (back, forward)
+            specs
         )
     end
 end

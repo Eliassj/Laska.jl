@@ -2,9 +2,9 @@ using Laska
 using Profile
 
 @time res = Laska.PhyOutput(
-    "E:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\23-04-24",
-    "E:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0",
-    "E:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\.laska\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0.bin"
+    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\23-04-24",
+    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0",
+    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\.laska\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0.bin"
 )
 
 @time tes = Laska.relativeSpikes(res, context = Dict("US" => 0, "CS" => 300))
@@ -25,8 +25,16 @@ using Profile
 #end
 
 
-data = Laska.getchan(res, 380:385, 0, 0.5, true, true)
+data = Laska.getchan(res, 375:385, 0, 0.3, true, true)
 
-Laska.plotchannels(res, 1:100, 0, 0.1)
+Laska.plotchannels(res, 375:385, 0, 0.1)
 
 Laska.plotraster(tes, 33)
+
+for x in sort(tes._stimulations, byvalue = true)
+    println(x[2], "(",x[1],")")
+end
+
+d = sort(tes._stimulations, byvalue = true)
+
+["$v($k)" for (k, v) in collect(d)]

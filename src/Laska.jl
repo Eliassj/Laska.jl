@@ -1,6 +1,6 @@
 module Laska
 
-const standardcol::String = "#4C2C69"
+standardcol::String = "#4C2C69"
 
 using DataFrames
 const dt = DataFrames
@@ -8,7 +8,7 @@ using Gtk
 using MAT
 using NPZ
 using GLMakie
-const plt = GLMakie
+using CairoMakie
 using CSV
 using Mmap
 const mp = Mmap
