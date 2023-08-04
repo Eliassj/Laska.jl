@@ -1,5 +1,7 @@
 module Laska
 
+const standardcol::String = "#4C2C69"
+
 using DataFrames
 const dt = DataFrames
 using Gtk
@@ -13,7 +15,8 @@ const mp = Mmap
 using LoopVectorization
 
 
-include("i.jl")
-include("e.jl")
-include("p.jl")
+include("i.jl") # Import functions
+include("e.jl") # Export functions
+include("t.jl") # Transforming functions
+include("p.jl") # Plotting/visualization
 end

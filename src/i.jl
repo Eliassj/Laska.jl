@@ -2,7 +2,7 @@
 
 # Initialize a PhyOutput object
 struct PhyOutput
-    _spiketimes::Matrix{UInt64}
+    _spiketimes::Matrix{Int64}
     _info::DataFrames.DataFrame
     _meta::Dict{SubString{String}, SubString{String}}
     _binpath::String
@@ -40,9 +40,9 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
             glxdir = phydir
         end
         println("Importing good clusters")
-        clusters::Vector{UInt64} = convert(Vector{UInt64}, NPZ.npzread(phydir*"\\spike_clusters.npy"))
-        times::Vector{UInt64} = NPZ.npzread(phydir*"\\spike_times.npy")[:,1]
-        spiketimes::Matrix{UInt64} = [clusters times]
+        clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_clusters.npy"))
+        times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_times.npy")[:,1])
+        spiketimes::Matrix{Int64} = [clusters times]
         info::DataFrames.DataFrame = CSV.read(phydir*"\\cluster_info.tsv", DataFrame)
 
         isgood(group) = group == "good"
@@ -68,8 +68,9 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
                 triggerpath = Gtk.open_dialog_native("Select triggerfile (.bin/.csv)", action=GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN)
                 t = importchanint16(triggerpath)
                 triggers = gettrig(t)
+            else
+                triggers = nothing
             end
-            triggers = nothing
         else
             t = importchanint16(triggerpath)
             triggers = gettrig(t)
@@ -82,12 +83,13 @@ end #struct phyoutput
 
 # Extract triggers from Vector
 
-function gettrig(t::Matrix)
-    r::Vector{CartesianIndex{2}} = findall(!iszero, t)
+function gettrig(t::Vector)
+    r::Vector = findall(!iszero, t)
     p::Matrix{Int64} = hcat(getindex.(r, 1), getindex.(r-circshift(r, 1), 1))
     s::Vector{Int64} = p[p[:,2] .!= 1, 1]
     return s
 end
+
 
 function getchan(
     p::PhyOutput,
@@ -164,14 +166,14 @@ function getchan(
 
 end # Getchan
 
-function importchx!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Union{Matrix{Int16}, Vector{Int16}}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+function importchx!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Matrix{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
     for (ntim, t) in i
         a[ntim, :] = transpose(mm[channels, t])
      end 
     return a
 end
 
-function importch1!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Union{Matrix{Int16}, Vector{Int16}}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+function importch1!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Vector{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
     for (ntim, t) in i
         a[ntim, 1] = mm[channels, t]
     end 
@@ -209,7 +211,7 @@ function importchanint16(path::String="")
     end
     if path[end-3:end] == ".bin"
         tmp::IOStream = open(path, "r")
-        res = reinterpret(Int16, read(tmp))
+        res = Array(reinterpret(Int16, read(tmp)))
         close(tmp)
         return res
     elseif path[end-3:end] == ".csv"
