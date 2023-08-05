@@ -90,7 +90,7 @@ function gettrig(t::Vector)
     return s
 end
 
-
+# TODO Add methods for channel spec types?
 function getchan(
     p::PhyOutput,
     ch::Union{Int, Vector{Int}, UnitRange{Int64}},
@@ -137,9 +137,6 @@ function getchan(
     len::UnitRange{Int64} = tmin:tmax
     #it::Vector{Tuple{Int64, Int64}} = collect(enumerate(len))
 
-    
-
-
     if threading
         r::Union{Matrix{Int16}, Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
         t::Vector{UnitRange{Int64}} = collect(Iterators.partition(len, 10000))
@@ -165,6 +162,8 @@ function getchan(
     end
 
 end # Getchan
+
+
 
 function importchx!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Matrix{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
     for (ntim, t) in i
