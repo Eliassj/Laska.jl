@@ -19,5 +19,6 @@ include("i.jl") # Import functions
 include("e.jl") # Export functions
 include("t.jl") # Transforming functions
 include("p.jl") # Plotting/visualization
+include("summarize.jl")
 #include("interactive.jl")
 end
