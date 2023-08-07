@@ -43,6 +43,7 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_times.npy")[:,1])
         spiketimes::Matrix{Int64} = [clusters times]
+        spiketimes = spiketimes[sortperm(spiketimes[:,1]),:] # sort by cluster
         info::DataFrames.DataFrame = CSV.read(phydir*"\\cluster_info.tsv", DataFrame)
 
         isgood(group) = group == "good"

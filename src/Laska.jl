@@ -16,6 +16,7 @@ using LoopVectorization
 
 
 include("i.jl") # Import functions
+include("misc.jl") # qol/helper functions
 include("e.jl") # Export functions
 include("t.jl") # Transforming functions
 include("p.jl") # Plotting/visualization
