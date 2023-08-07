@@ -8,7 +8,7 @@ struct PhyOutput
     _binpath::String
     _triggers::Union{Vector{Int}, Nothing}
 
-    """
+"""
     PhyOutput(
         phydir::String = "",
         glxdir::String = "",

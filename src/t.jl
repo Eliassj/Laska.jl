@@ -1,7 +1,7 @@
 # Data transformations
 
 struct relativeSpikes
-    _spiketimes::Matrix{Int64}
+    _spiketimes::Dict{}
     _info::DataFrames.DataFrame
     _meta::Dict{SubString{String}, SubString{String}}
     _binpath::String
