@@ -74,3 +74,33 @@ function clusterbaseline(t::relativeSpikes)
     end
     return clusterbaselines
 end
+
+function spikeisi(p::Laska.PhyOutput)
+    d::Dict{Int64, Vector{Int64}} = Dict(c => Vector{Int64}() for c in p._info[!, "cluster_id"])
+    Threads.@threads for c in p._info[!, "cluster_id"]
+        @inbounds tmp::Vector{Int64} = p._spiketimes[p._spiketimes[:,1] .== c, 2]
+        for i in 1:length(tmp)-1
+            @inbounds tmp[i] = tmp[i+1] - tmp[i]
+        end
+        @inbounds d[c] = tmp[1:end-1]
+    end
+
+    #if updateinfo == true
+    #    means = Vector{Float64}(undef, length(p._info[!, "cluster_id"]))
+    #    for (n, c) in enumerate(p._info[!, "cluster_id"])
+    #        means[n] = sum(d[c]) / length(d[c])
+    #    end
+    #    medians = Vector{Float64}(undef, length(p._info[!, "cluster_id"]))
+    #    for (n, c) in enumerate(p._info[!, "cluster_id"])
+    #        len = length(d[c])
+    #        sorted = sort(d[c])
+    #        if len % 2 == 0
+    #            medians[n] = (sorted[Int(len/2)] + sorted[Int((len/2)+1)]) / 2
+    #        else
+    #            medians[n] = sorted[Int((len/2)+0.5)]
+    #        end
+    #    end
+    #    insertcols!(p._info, "ISImean" => means, "ISImedian" => medians)
+    #end
+    return d
+end

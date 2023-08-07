@@ -81,3 +81,13 @@ function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = stand
     linkxaxes!(axhi, axsc)
     display(fig)
 end
+
+function plotisi(p::Laska.PhyOutput, cluster::Int)
+    dict = spikeisi(p)
+    x = p._spiketimes[p._spiketimes[:,1] .== cluster, 2][1:end-1]
+    y = dict[cluster]
+    fig = Figure()
+    ax = Axis(fig[1,1])
+    lines!(x, y)
+    display(fig)
+end
