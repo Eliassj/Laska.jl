@@ -83,7 +83,10 @@ end
 
 
 # Optimera genom att använda n_spikes från info?
-function spikeisi(p::Laska.PhyOutput, updateinfo::Bool = false)
-    # Create array for storing results
-    ar = deepcopy(p._spiketimes)
+function spikeisi(p::Laska.PhyOutput, )
+    shifted::Matrix{Int64} = circshift(p._spiketimes, -1) - p._spiketimes
+    newclstrs::Vector{Int64} = p._spiketimes[shifted[:,1] .== 0, 1]
+    shifted = shifted[shifted[:,1] .== 0,:]
+    out::Matrix{Int64} = hcat(newclstrs, shifted[:,2])
+    return out
 end

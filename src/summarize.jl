@@ -26,16 +26,13 @@ end
 
 # 2|ISIn+1 − ISIn|/(ISIn+1 + ISIn)
 function cv2(p::PhyOutput)
-    isis = spikeisi(p, false)
-    clusters = getclusters(p)
-    cv2dict = Dict{Int64, Vector{Float64}}(c => Vector{Float64}(undef, length(isis[c])-1) for c in clusters)
-    for i in eachindex(clusters)
-        c = clusters[i]
-        for n in 1:(length(isis[c]) - 1)
-            isis[c][n] = 2 * abs(isis[c][n+1] - isis[c][n]) / (isis[c][n+1] + isis[c][n])
-        end
-
-        #cv2dict[c] = 2 .* (abs.(circshift(isis[c], 1) - isis[c])[2:end] ./ (circshift(isis[c], 1) + isis[c])[2:end])
+    begin
+    isis = spikeisi(p)
+    cv = isis[:,2]
+    cv = 2 .* abs.(circshift(cv, 1) .- cv) ./ (circshift(cv, 1) .+ cv)
+    ind = circshift(isis[:,1], 1) - isis[:,1]
+    cv = cv[ind .== 0,:]
+    out = hcat(isis[ind .== 0,1], cv)
     end
-    return isis
+    return out
 end
