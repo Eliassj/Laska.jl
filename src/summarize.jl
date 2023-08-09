@@ -56,9 +56,9 @@ end
 function mad(p::PhyOutput)
     isis = spikeisi(p)
     clusters = getclusters(p)
-    medians = Vector{Float64}(undef, length(clusters))
-    for (n, c) in enumerate(clusters)
-        medians[n] = DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])
-    end   
-    isis
+    for (c) in enumerate(clusters)
+        isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])
+    end
+    
+    return isis
 end
