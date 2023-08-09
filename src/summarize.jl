@@ -35,7 +35,6 @@ function cv2(p::PhyOutput, updateinfo::Bool = false)
     out = hcat(isis[ind .== 0,1], cv)
     end
     
-
     if updateinfo == true
         clusters = getclusters(p)
         means = Vector{Float64}(undef, length(clusters))
@@ -55,10 +54,27 @@ end
 # median absolute difference from the median interspike interval (MAD)
 function mad(p::PhyOutput)
     isis = spikeisi(p)
+    isis = Float64.(isis)
     clusters = getclusters(p)
-    for (c) in enumerate(clusters)
-        isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])
+    result = Matrix{Float64}(undef, (length(clusters), 2))
+    for (n, c) in enumerate(clusters)
+
+        result[n,:] = [c, DataFrames.Statistics.median(abs.(isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])))]
     end
-    
-    return isis
+    return result
+end
+
+function mad(p::PhyOutput, updateinfo::Bool)
+    isis = spikeisi(p)
+    isis = Float64.(isis)
+    clusters = getclusters(p)
+    result = Matrix{Float64}(undef, (length(clusters), 2))
+    for (n, c) in enumerate(clusters)
+
+        result[n,:] = [c, DataFrames.Statistics.median(abs.(isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])))]
+    end
+    if updateinfo
+        insertcols!(p._info, "mad" => result[:,2])
+    end
+    return result
 end
