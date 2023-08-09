@@ -79,7 +79,72 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
 
         new(spiketimes, info, metadict, binfile, triggers)
 
+    end
+
+
+    function PhyOutput(
+        phydir::String = "",
+        glxdir::String = "",
+        triggerpath::String = "",
+        same::Bool = false;
+        filters::Tuple
+    )
+        if length(phydir) == 0
+            println("Select phy/kilosort output directory")
+            phydir = Gtk.open_dialog_native("Select Kilosort/Phy output Folder", action=GtkFileChooserAction.SELECT_FOLDER)
         end
+        if length(glxdir) == 0 && same == false
+            println("Select spikeGLX output directory")
+            glxdir = Gtk.open_dialog_native("Select spikeGLX output directory", action=GtkFileChooserAction.SELECT_FOLDER)
+        end
+        if length(glxdir) == 0 && same == true
+            glxdir = phydir
+        end
+        println("Importing good clusters")
+        clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_clusters.npy"))
+        times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_times.npy")[:,1])
+        spiketimes::Matrix{Int64} = [clusters times]
+        spiketimes = spiketimes[sortperm(spiketimes[:,1]),:] # sort by cluster
+        info::DataFrames.DataFrame = CSV.read(phydir*"\\cluster_info.tsv", DataFrame)
+
+        isgood(group) = group == "good"
+        info = subset(info, :group => ByRow(isgood), skipmissing = true)
+
+        for f in filters
+            filter!(f, info)
+        end
+
+        ininfo(cluster) = cluster in info[!, 1]
+        spiketimes = spiketimes[ininfo.(spiketimes[:,1]),:]
+
+        glxfiles = readdir(glxdir, join = true)
+        binfile::String = [f for f in glxfiles if f[length(f)-6:length(f)] == ".ap.bin"][1]
+        metafile::String = [f for f in glxfiles if f[length(f)-7:length(f)] == ".ap.meta"][1]
+
+        # Read metadata
+        tmp = open(metafile, "r")
+        metaraw = readlines(tmp)
+        close(tmp)
+        metaraw = split.(metaraw, "=")
+        metadict = Dict(i[1] => i[2] for i in metaraw)
+
+        # Read triggerdata
+        if triggerpath == ""
+            if Gtk.ask_dialog("No triggerpath provided, select a file?")
+                triggerpath = Gtk.open_dialog_native("Select triggerfile (.bin/.csv)", action=GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN)
+                t = importchanint16(triggerpath)
+                triggers = gettrig(t)
+            else
+                triggers = nothing
+            end
+        else
+            t = importchanint16(triggerpath)
+            triggers = gettrig(t)
+        end
+
+        new(spiketimes, info, metadict, binfile, triggers)
+
+    end
 end #struct phyoutput
 
 # Extract triggers from Vector
@@ -221,3 +286,4 @@ function importchanint16(path::String="")
         ArgumentError("Only '.bin' or '.csv' files allowed.")
     end
 end #importchan
+

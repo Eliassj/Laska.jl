@@ -66,7 +66,7 @@ function filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange
 end
 
 function clusterbaseline(t::relativeSpikes)
-    clusters = Set(t._spiketimes[:,1])
+    clusters = Set(t._info[!,"cluster_id"])
     tim = t._len[1] / 1000
     ind = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
     clusterbaselines = Dict()

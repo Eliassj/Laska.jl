@@ -23,3 +23,7 @@ end
 d = sort(tes._stimulations, byvalue = true)
 
 ["$v($k)" for (k, v) in collect(d)]
+
+function testfunc(a::Int, b::Int, c...)
+    println(a, b, c[2])
+end
