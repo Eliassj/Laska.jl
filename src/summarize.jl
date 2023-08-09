@@ -25,7 +25,7 @@ function spikesper(p::Laska.PhyOutput, period::Float64 = 10.0)
 end
 
 # 2|ISIn+1 − ISIn|/(ISIn+1 + ISIn)
-function cv2(p::PhyOutput)
+function cv2(p::PhyOutput, updateinfo::Bool = false)
     begin
     isis = spikeisi(p)
     cv = isis[:,2]
@@ -34,5 +34,31 @@ function cv2(p::PhyOutput)
     cv = cv[ind .== 0,:]
     out = hcat(isis[ind .== 0,1], cv)
     end
+    
+
+    if updateinfo == true
+        clusters = getclusters(p)
+        means = Vector{Float64}(undef, length(clusters))
+        medians = Vector{Float64}(undef, length(clusters))
+        for (n, c) in enumerate(clusters)
+            means[n] = DataFrames.Statistics.mean(out[out[:,1] .== c, 2])
+            medians[n] = DataFrames.Statistics.median(out[out[:,1] .== c, 2])
+
+        end
+        insertcols!(p._info, "cv2mean" => means)
+        insertcols!(p._info, "cv2median" => medians)
+    end
+
     return out
+end
+
+# median absolute difference from the median interspike interval (MAD)
+function mad(p::PhyOutput)
+    isis = spikeisi(p)
+    clusters = getclusters(p)
+    medians = Vector{Float64}(undef, length(clusters))
+    for (n, c) in enumerate(clusters)
+        medians[n] = DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])
+    end   
+    isis
 end

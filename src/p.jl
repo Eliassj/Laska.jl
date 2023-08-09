@@ -91,3 +91,54 @@ function plotisi(p::Laska.PhyOutput, cluster::Int)
     lines!(x, y)
     display(fig)
 end
+
+function plotcv2(p::PhyOutput, cluster::Int64)
+    data = cv2(p)
+    clustr = Int(cluster)
+    fig = Figure()
+    ax = Axis(
+        fig[1,1],
+        xlabel = "CV2"
+    )
+    hist!(
+        ax,
+        data[data[:,1] .== clustr, 2],
+        bins = 250
+    )
+    display(fig)
+end
+
+function plotsumstat(p::PhyOutput, x::String, y::String)
+    data = p._info
+    fig = Figure()
+    ax = Axis(
+        fig[1,1],
+        xlabel = x,
+        ylabel = y
+    )
+    scatter!(
+        ax,
+        data[!,x],
+        data[!,y] 
+    )
+    display(fig)
+end
+
+function plotsumstat(p::PhyOutput, x::String, y::String, z::String)
+    GLMakie.activate!()
+    data = p._info
+    fig = Figure()
+    ax = Axis3(
+        fig[1,1],
+        xlabel = x,
+        ylabel = y,
+        zlabel = z
+    )
+    scatter!(
+        ax,
+        data[!,x],
+        data[!,y] ,
+        data[!,z]
+    )
+    display(fig)
+end
