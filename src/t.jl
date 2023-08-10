@@ -1,7 +1,7 @@
 # Data transformations
 
 struct relativeSpikes
-    _spiketimes::Dict{}
+    _spiketimes::Matrix{Int64}
     _info::DataFrames.DataFrame
     _meta::Dict{SubString{String}, SubString{String}}
     _binpath::String
@@ -55,7 +55,7 @@ end
 """
     filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange{Int64})
 
-Returns an index of all values in `a` that occur in rs. tmp should be a Bool vector of the same length as a. it should be 1:length of vec.
+Returns an index of all values in `a` that occur in rs. tmp should be a Bool vector of the same length as a.
 Many of the variables could be defined in the function but are not so they can be created outside of a loop.
 """
 function filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange{Int64})
