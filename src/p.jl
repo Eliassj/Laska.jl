@@ -17,7 +17,6 @@ function plotchannels(p::PhyOutput, channels, tmin, tmax; col = standardcol)
 end
 
 function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = standardcol)
-    GLMakie.activate!()
     data = t._spiketimes[findall(x -> x == cluster, t._spiketimes[:,1]),:]
     xdat = data[:,2] ./ (parse(Float64, t._meta["imSampRate"]) / 1000)
     ydat = data[:,3]
@@ -74,7 +73,7 @@ function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = stand
         axhi,
         xdat,
         bins = t._specs["back"] + t._specs["forward"],
-        color = standardcol
+        color = col
     )
     rowsize!(fig.layout, 1, Auto(0.25))
     rowgap!(fig.layout, 1, 0)

@@ -66,14 +66,14 @@ function filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange
 end
 
 function clusterbaseline(t::relativeSpikes)
-    clusters = Set(t._info[!,"cluster_id"])
-    tim = t._len[1] / 1000
+    clusters = t._info[!,"cluster_id"]
+    tim = (t._specs["back"] + t._specs["forward"]) / 1000
     ind = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
-    clusterbaselines = Dict()
+    clusterbaselines = Dict{Float64, Matrix{Float64}}()
     for c in clusters
-        tmp = zeros(t._stimulations["ntrig"], 1)
+        tmp = zeros(t._specs["ntrig"], 1)
         data = ind[findall(x -> x == c, ind[:, 1]), :]
-        Threads.@threads for n in 1:t._stimulations["ntrig"]
+        Threads.@threads for n in 1:t._specs["ntrig"]
             @inbounds tmp[n] = length(filter(t -> t == n, data[:, 3])) / tim
         end
         clusterbaselines[c] = tmp
@@ -81,6 +81,26 @@ function clusterbaseline(t::relativeSpikes)
     return clusterbaselines
 end
 
+function depthbaseline(t::relativeSpikes)
+    depths = Set(t._info[!, "depth"])
+    ind = t._spiketimes[t._spiketimes[:,2] .< 0,:]
+    tim = (t._specs["back"] + t._specs["forward"]) / 1000
+    depthbaselines = Dict{Int64, Matrix{Float64}}()
+    for d in depths
+        tmp = zeros(t._specs["ntrig"], 1)
+        clusters = Set(subset(t._info, :depth => ByRow(x -> x == d))[!, "cluster_id"])
+        data = ind[findall(x -> x in clusters, ind[:,1]), :]
+        Threads.@threads for n in 1:t._specs["ntrig"]
+            @inbounds tmp[n] = length(filter(t -> t == n, data[:,3])) / tim
+        end
+        depthbaselines[Int64(d)] = tmp
+    end
+    return depthbaselines
+end
+
+function relresponse(t::relativeSpikes)
+    
+end
 
 # Optimera genom att använda n_spikes från info?
 function spikeisi(p::Laska.PhyOutput)
