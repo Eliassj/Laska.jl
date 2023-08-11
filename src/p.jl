@@ -16,8 +16,8 @@ function plotchannels(p::PhyOutput, channels, tmin, tmax; col = standardcol)
     display(fig)
 end
 
-function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = standardcol)
-    data = t._spiketimes[findall(x -> x == cluster, t._spiketimes[:,1]),:]
+function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = standardcol, scattersize = 7)
+    data = t._spiketimes[t._spiketimes[:,1] .== cluster,:]
     xdat = data[:,2] ./ (parse(Float64, t._meta["imSampRate"]) / 1000)
     ydat = data[:,3]
     xt = collect(values(t._stimulations))
@@ -66,7 +66,7 @@ function plotraster(t::Laska.relativeSpikes, cluster::Int64, col::String = stand
         axsc,
         xdat,
         ydat,
-        markersize = 5,
+        markersize = scattersize,
         color = col
     )
     hist!(

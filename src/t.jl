@@ -8,8 +8,8 @@ struct relativeSpikes
     _stimulations::Union{Dict, Nothing}
     _specs::Dict
 
-    function relativeSpikes(p::Laska.PhyOutput, back::Int64 = 500, forward::Int64 = 600; context::Dict = Dict())
-        spikes = filtertriggers(p, back, forward)
+    function relativeSpikes(p::Laska.PhyOutput, back::Int = 500, forward::Int = 600; context::Dict = Dict())
+        spikes = filtertriggers(p, Float64(back), Float64(forward))
         ntrig = maximum(spikes[:,3])
         specs = Dict(
             "back" => back,
@@ -28,42 +28,25 @@ struct relativeSpikes
 end
 
 
-function filtertriggers(p::Laska.PhyOutput, back::Int64, forward::Int64)
-    if typeof(p._triggers) == Nothing
-        ArgumentError("PhyOutput does not contain triggers")
-    end
-    
-    back = back * parse(Float64, p._meta["imSampRate"]) / 1000
-    forward = forward * parse(Float64, p._meta["imSampRate"]) / 1000
-    triggers = Array{Int64}(undef, (0,3))
-    vec = p._spiketimes[:,2]
+function filtertriggers(p::PhyOutput, back::Float64, forward::Float64)
+    res = Matrix{Int64}(undef, (size(p._spiketimes)[1], 3))
 
-    tmp = Vector{Bool}(undef, length(vec))
-    it::UnitRange{Int64} = 1:length(vec)
+    backF::Float64 = back * parse(Float64, p._meta["imSampRate"]) / 1000
+    forwardF::Float64 = forward * parse(Float64, p._meta["imSampRate"]) / 1000
+
+    pos::Int64 = 1
     for (n, trig) in enumerate(p._triggers)
-        rang = Set((trig - back):(trig+forward))
-        ind = filterrange(vec, rang, tmp, it)
-        filt = p._spiketimes[ind,:]
-        res = hcat(filt, fill(n, size(filt,1)))
-        res[:,2] = res[:,2] .- trig
-        triggers = vcat(triggers, res)
+        tmp::Matrix{Int64} = p._spiketimes[trig - backF .<= p._spiketimes[:,2] .<= trig + forwardF, :]
+        tmp = hcat(tmp, fill(n, size(tmp,1)))
+        tmp[:,2] = tmp[:,2] .- (trig)
+        res[pos:(size(tmp)[1]+pos-1),:] = tmp
+        pos += size(tmp)[1]
     end
-    return triggers
+    return res[1:pos-1,:]
+    
 end
 
 
-"""
-    filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange{Int64})
-
-Returns an index of all values in `a` that occur in rs. tmp should be a Bool vector of the same length as a.
-Many of the variables could be defined in the function but are not so they can be created outside of a loop.
-"""
-function filterrange(a::Vector{Int64}, rs::Set, tmp::Vector{Bool}, it::UnitRange{Int64})
-    Threads.@threads for n in it
-        @inbounds tmp[n] = a[n] in rs
-    end
-    return findall(x -> x == true, tmp)
-end
 
 function clusterbaseline(t::relativeSpikes)
     clusters = t._info[!,"cluster_id"]
@@ -99,7 +82,7 @@ function depthbaseline(t::relativeSpikes)
 end
 
 function relresponse(t::relativeSpikes)
-    
+
 end
 
 # Optimera genom att använda n_spikes från info?

@@ -18,16 +18,9 @@ data = Laska.getchan(res, 375:385, 0, 0.3, true, true)
 
 Laska.plotchannelsinteractive(res, 375:385, 0, 0.1)
 
-Laska.plotraster(tes, 33)
+p=Laska.plotraster(tes, 1060)
 
-for x in sort(tes._stimulations, byvalue = true)
-    println(x[2], "(",x[1],")")
-end
+s = Scene()
 
-d = sort(tes._stimulations, byvalue = true)
 
-["$v($k)" for (k, v) in collect(d)]
 
-function testfunc(a::Int, b::Int, c...)
-    println(a, b, c[2])
-end
