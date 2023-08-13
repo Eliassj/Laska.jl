@@ -43,7 +43,6 @@ function filtertriggers(p::PhyOutput, back::Float64, forward::Float64)
         pos += size(tmp)[1]
     end
     return res[1:pos-1,:]
-    
 end
 
 
@@ -52,16 +51,16 @@ function clusterbaseline(t::relativeSpikes)
     clusters = t._info[!,"cluster_id"]
     tim = (t._specs["back"] + t._specs["forward"]) / 1000
     ind = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
-    clusterbaselines = Dict{Float64, Matrix{Float64}}()
+    clusterbaselines = Dict{Int64, Matrix{Float64}}()
     for c in clusters
         tmp = zeros(t._specs["ntrig"], 1)
         data = ind[findall(x -> x == c, ind[:, 1]), :]
         Threads.@threads for n in 1:t._specs["ntrig"]
             @inbounds tmp[n] = length(filter(t -> t == n, data[:, 3])) / tim
         end
-        clusterbaselines[c] = tmp
+        clusterbaselines[Int64(c)] = tmp
     end
-    return clusterbaselines
+    return ClusterBaseline(clusterbaselines)
 end
 
 function depthbaseline(t::relativeSpikes)
@@ -78,11 +77,44 @@ function depthbaseline(t::relativeSpikes)
         end
         depthbaselines[Int64(d)] = tmp
     end
-    return depthbaselines
+    return DepthBaseline(depthbaselines)
 end
 
-function relresponse(t::relativeSpikes)
+function relresponse(t::relativeSpikes, period = 30)
+    if Set(keys(b)) != Set(t._info[!,"cluster_id"])
+        error("clusters in t::relativeSpikes does not match those in baselines provided")
+    end
+    cperiod::Int64 = Int64(period * parse(Float64, t._meta["imSampRate"]) / 1000)
 
+    timesum = deepcopy(t._spiketimes)
+    timesum[:,2] = floor.(timesum[:,2] ./ cperiod) .* cperiod
+    ex = extrema(timesum[:,2])
+    ns = Iterators.product(t._info[!,"cluster_id"], collect(ex[1]:cperiod:ex[2]), collect(1:t._specs["ntrig"]))
+
+    res = Matrix{Int64}(undef, (length(t._info[!, "cluster_id"]) * length(ex[1]:cperiod:ex[2]) * length(1:t._specs["ntrig"]), 4))
+    n::Int64 = 1
+    for (c, time, trig) in ns
+        res[n,:] = [c time trig 0]
+        n += 1
+    end
+    v = collect(ex[1]:cperiod:ex[2])
+    for i in eachindex(t._info[!, "cluster_id"])
+        c::Int64 = t._info[!, "cluster_id"][i]
+        clustsum::Matrix{Int64} = timesum[timesum[:,1] .== c,:]
+        for trig in 1:t._specs["ntrig"]
+            for tim in eachindex(v)
+                time::Int64 = v[tim]
+                res[res[:,1] .== c .&& res[:,2] .== time .&& res[:,3] .== trig, 4] .= length(
+                    clustsum[clustsum[:,2] .== time .&& clustsum[:,3] .== trig,1]
+                )
+
+            end
+            println(trig)
+            
+        end
+    end
+    
+    return res
 end
 
 # Optimera genom att använda n_spikes från info?
