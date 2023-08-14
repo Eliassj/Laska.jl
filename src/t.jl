@@ -80,10 +80,7 @@ function depthbaseline(t::relativeSpikes)
     return DepthBaseline(depthbaselines)
 end
 
-function relresponse(t::relativeSpikes, period = 30)
-    if Set(keys(b)) != Set(t._info[!,"cluster_id"])
-        error("clusters in t::relativeSpikes does not match those in baselines provided")
-    end
+function spikesper(t::relativeSpikes, period::Int64 = 30)
     cperiod::Int64 = Int64(period * parse(Float64, t._meta["imSampRate"]) / 1000)
 
     timesum = deepcopy(t._spiketimes)
@@ -91,31 +88,41 @@ function relresponse(t::relativeSpikes, period = 30)
     ex = extrema(timesum[:,2])
     ns = Iterators.product(t._info[!,"cluster_id"], collect(ex[1]:cperiod:ex[2]), collect(1:t._specs["ntrig"]))
 
-    res = Matrix{Int64}(undef, (length(t._info[!, "cluster_id"]) * length(ex[1]:cperiod:ex[2]) * length(1:t._specs["ntrig"]), 4))
+    resmatrix::Matrix{Int64} = Matrix{Int64}(undef, (length(t._info[!, "cluster_id"]) * length(ex[1]:cperiod:ex[2]) * length(1:t._specs["ntrig"]), 4))
     n::Int64 = 1
     for (c, time, trig) in ns
-        res[n,:] = [c time trig 0]
+        resmatrix[n,:] = [c time trig 0]
         n += 1
     end
-    v = collect(ex[1]:cperiod:ex[2])
-    for i in eachindex(t._info[!, "cluster_id"])
-        c::Int64 = t._info[!, "cluster_id"][i]
-        clustsum::Matrix{Int64} = timesum[timesum[:,1] .== c,:]
-        for trig in 1:t._specs["ntrig"]
-            for tim in eachindex(v)
-                time::Int64 = v[tim]
-                res[res[:,1] .== c .&& res[:,2] .== time .&& res[:,3] .== trig, 4] .= length(
-                    clustsum[clustsum[:,2] .== time .&& clustsum[:,3] .== trig,1]
-                )
+    hashlib::Matrix{UInt64} = hcat(hash.(resmatrix[:,1], hash.(resmatrix[:,2], hash.(resmatrix[:,3]))), zeros(UInt64, size(resmatrix)[1]))
+    lookhash = hash.(timesum[:,1], hash.(timesum[:,2], hash.(timesum[:,3])))
+    indlookup = Dict(hashlib[n,1] => n for n in eachindex(hashlib[:,1]))
 
-            end
-            println(trig)
-            
-        end
-    end
-    
-    return res
+    incrres!(resmatrix, indlookup, lookhash)
+    return resmatrix[sortperm(resmatrix[:,1]),:]
 end
+
+function incrres!(r::Matrix{Int64}, ind::Dict{UInt64, Int64}, v::Vector{UInt64})
+    for i in v
+        @inbounds r[ind[i], 4] += 1
+    end
+end
+
+function relresponse(t::relativeSpikes, period::Int64, baseline::ClusterBaseline)
+    absolutes = spikesper(t, period)
+    re = Float64.(absolutes)
+
+    for i in 1:size(absolutes)[1]
+        re[i, 4] = absolutes[i, 4] * (1000 / period) / baseline.x[absolutes[i, 1]][absolutes[i, 3]]
+    end
+    re = re[sortperm(re[:,1]),:]
+
+
+
+    return re
+end
+
+
 
 # Optimera genom att använda n_spikes från info?
 function spikeisi(p::Laska.PhyOutput)

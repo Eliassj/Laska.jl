@@ -13,6 +13,7 @@ using CSV
 using Mmap
 const mp = Mmap
 using LoopVectorization
+using DataStructures
 
 include("types.jl")
 include("filter.jl")

@@ -19,7 +19,3 @@ Laska.plotchannelsinteractive(res, 375:385, 0, 0.1)
 p=Laska.plotraster(tes, 1060)
 
 s = Scene()
-
-
-
-Laska.relresponse(tes, Laska.clusterbaseline(tes))
