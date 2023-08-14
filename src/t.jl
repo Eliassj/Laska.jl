@@ -49,7 +49,7 @@ end
 
 function clusterbaseline(t::relativeSpikes)
     clusters = t._info[!,"cluster_id"]
-    tim = (t._specs["back"] + t._specs["forward"]) / 1000
+    tim = t._specs["back"] / 1000
     ind = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
     clusterbaselines = Dict{Int64, Matrix{Float64}}()
     for c in clusters
@@ -66,7 +66,7 @@ end
 function depthbaseline(t::relativeSpikes)
     depths = Set(t._info[!, "depth"])
     ind = t._spiketimes[t._spiketimes[:,2] .< 0,:]
-    tim = (t._specs["back"] + t._specs["forward"]) / 1000
+    tim = t._specs["back"] / 1000
     depthbaselines = Dict{Int64, Matrix{Float64}}()
     for d in depths
         tmp = zeros(t._specs["ntrig"], 1)
