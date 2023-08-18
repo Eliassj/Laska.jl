@@ -14,15 +14,17 @@ using Mmap
 const mp = Mmap
 using LoopVectorization
 using DataStructures
+using DSP
 
 include("types.jl")
 include("filter.jl")
 include("i.jl") # Import functions
+include("t.jl") # Transforming functions
 include("misc.jl") # qol/helper functions
 include("e.jl") # Export functions
-include("t.jl") # Transforming functions
 include("p.jl") # Plotting/visualization
 include("summarize.jl")
+include("clustering.jl")
 
 #include("interactive.jl")
 end

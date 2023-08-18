@@ -1,5 +1,7 @@
 # Data transformations
 
+
+# TODO Change function naming in accordance with style guide
 struct relativeSpikes
     _spiketimes::Matrix{Int64}
     _info::DataFrames.DataFrame
@@ -108,21 +110,50 @@ function incrres!(r::Matrix{Int64}, ind::Dict{UInt64, Int64}, v::Vector{UInt64})
     end
 end
 
+
+# TODO Separate into 1 function for single bins and 1 for summarizing by cluster/depth/triggertime
+# ie by cluster & every n:th trigger
 function relresponse(t::relativeSpikes, period::Int64, baseline::ClusterBaseline)
-    absolutes = spikesper(t, period)
-    re = Float64.(absolutes)
+    absolutes::Matrix{Int64} = spikesper(t, period)
+    re::Matrix{Float64} = Float64.(absolutes)
 
     for i in 1:size(absolutes)[1]
         re[i, 4] = absolutes[i, 4] * (1000 / period) / baseline.x[absolutes[i, 1]][absolutes[i, 3]]
     end
     re = re[sortperm(re[:,1]),:]
 
+    mm::Matrix{Float64} = Matrix(undef, Int(nclusters(t) * length(unique(re[:,2]))), 3)
+    
 
+    d::Dict{UInt64, Vector{Float64}} = Dict(hash(re[n,1], hash(re[n,2])) => Vector{Float64}() for n in 1:size(re)[1])
 
-    return re
+    _filteredpush!(d, re)
+
+    n=1
+    for c in getclusters(t)
+            for time in unique(re[:,2])
+                mm[n,:] = [c, time, DataFrames.Statistics.mean(d[hash(c, hash(time))])]
+                n += 1
+            end
+    end
+    return mm
 end
 
+"""
+    _filteredpush!(in::Matrix{Float64}, dic::Dict{UInt64, Float64})
 
+Push values from column 4 of `in` into `dic` whose keys are hashes of column 1 & 2 in `in`.     
+NaN:s and Inf:s are filtered.        
+Currently ONLY for use in `relresponse`!
+"""
+function _filteredpush!(dic::Dict{UInt64, Vector{Float64}}, in::Matrix{Float64})
+    for n in 1:size(in)[1]
+        if !isnan(in[n, 4]) && !isinf(in[n, 4])
+            push!(dic[hash(in[n, 1], hash(in[n, 2]))], in[n, 4])
+        end
+    end
+    return dic
+end
 
 # Optimera genom att använda n_spikes från info?
 function spikeisi(p::Laska.PhyOutput)

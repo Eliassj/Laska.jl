@@ -29,15 +29,15 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
         same::Bool = false;
         filters = nothing
     )
-        if length(phydir) == 0
+        if Base.length(phydir) == 0
             println("Select phy/kilosort output directory")
             phydir = Gtk.open_dialog_native("Select Kilosort/Phy output Folder", action=GtkFileChooserAction.SELECT_FOLDER)
         end
-        if length(glxdir) == 0 && same == false
+        if Base.length(glxdir) == 0 && same == false
             println("Select spikeGLX output directory")
             glxdir = Gtk.open_dialog_native("Select spikeGLX output directory", action=GtkFileChooserAction.SELECT_FOLDER)
         end
-        if length(glxdir) == 0 && same == true
+        if Base.length(glxdir) == 0 && same == true
             glxdir = phydir
         end
         println("Importing good clusters")
@@ -58,8 +58,8 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
         spiketimes = spiketimes[ininfo.(spiketimes[:,1]),:]
 
         glxfiles = readdir(glxdir, join = true)
-        binfile::String = [f for f in glxfiles if f[length(f)-6:length(f)] == ".ap.bin"][1]
-        metafile::String = [f for f in glxfiles if f[length(f)-7:length(f)] == ".ap.meta"][1]
+        binfile::String = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"][1]
+        metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
 
         # Read metadata
         tmp = open(metafile, "r")

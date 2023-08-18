@@ -64,7 +64,7 @@ function mad(p::PhyOutput)
     return result
 end
 
-function mad(p::PhyOutput, updateinfo::Bool)
+function mad!(p::PhyOutput)
     isis = spikeisi(p)
     isis = Float64.(isis)
     clusters = getclusters(p)
@@ -73,8 +73,7 @@ function mad(p::PhyOutput, updateinfo::Bool)
 
         result[n,:] = [c, DataFrames.Statistics.median(abs.(isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])))]
     end
-    if updateinfo
-        insertcols!(p._info, "mad" => result[:,2])
-    end
+    insertcols!(p._info, "mad" => result[:,2])
+    
     return result
 end

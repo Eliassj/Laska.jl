@@ -141,3 +141,16 @@ function plotsumstat(p::PhyOutput, x::String, y::String, z::String)
     )
     display(fig)
 end
+
+function plotrelresponse(r, cluster)
+    fig = Figure()
+    ax= Axis(
+        fig[1,1]
+    )
+    lines!(
+        ax,
+        r[r[:,1].==cluster, 2] ./ 30,
+        r[r[:,1].==cluster, 3]
+    )
+    display(fig)
+end
