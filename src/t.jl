@@ -164,10 +164,26 @@ function spikeisi(p::Laska.PhyOutput)
     return out
 end
 
-#function spikeisi(g::Vector{Int64}, v::Vector{Int64})
-#    shifted::Matrix{Int64} = circshift(p._spiketimes, -1) - p._spiketimes
-#    newclstrs::Vector{Int64} = p._spiketimes[shifted[:,1] .== 0, 1]
-#    shifted = shifted[shifted[:,1] .== 0,:]
-#    out::Matrix{Int64} = hcat(newclstrs, shifted[:,2])
-#    return out
-#end
+function autocorrelogram(p::PhyOutput, cluster::Int64, binsize::Int64)
+    times::Vector{Int64} = getspiketimes(p, cluster)[:,2]
+    @assert binsize >= 1 "binsize should be >= 1"
+    restmp = Vector{Int64}(undef, length(times))
+    count = Accumulator{Int64, Int64}()
+    for n in eachindex(times)
+        restmp = fld.(times .- times[n], binsize)
+        for i in restmp
+            count[i] += 1
+        end
+    end
+    return count
+end
+
+function autocorrelogramfft(p::PhyOutput, cluster::Int64, binsize::Int64)
+    times::Vector{Int64} = extendvecthin(getspiketimes(p, cluster)[:,2])
+    #timescorr::Vector{Float64} = times .- mean(times)
+    f = FFTW.fft(times)
+    f = real.(f) .* conj.(f)
+    out::Vector{Complex} = ifft(f)
+    
+    return out
+end

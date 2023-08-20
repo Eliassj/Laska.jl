@@ -5,20 +5,6 @@
 ##################################
 
 
-num1 = [rand(1:450) for i in 1:20]
-num2 = [rand(550:1000) for i in 1:20]
-
-
-test2 = zeros(
-    Float64,
-    1000,
-    1000
-    )
-
-test2[num1, num2] .= 1
-test2[num2, num1] .= 1
-
-test2
 
 fnormal(x, μ, σ) = exp((-(x - μ)^2) / ((2*σ)^2)) / σ * sqrt(2*pi)
 
@@ -28,10 +14,7 @@ function normalvector(len, σ, max = 1)
     v = v .* max / maximum(v)
 end
 
-lines(normalvector(100, 15, 1))
 
-convolved = conv(normalvector(100, 15, 1), normalvector(100, 15, 1), test2)
-heatmap(convolved)
 
 function makeway(A)
     waymatrix = similar(convolved)
@@ -46,8 +29,7 @@ function makeway(A)
     return waymatrix
 end
 
-way = makeway(convolved)
-starts = [sum(way[:,k]) for k in 1:size(way)[2]]
+
 
 function findway(start, waymatrix)
     resvec = Vector{Int64}(undef, size(waymatrix)[2])
@@ -58,18 +40,14 @@ function findway(start, waymatrix)
     end
     return resvec
 end
-w = Vector{Vector{Int64}}(undef, 55)
-max = maximum(way)
-for (k,i) in enumerate(10:20:1090)
-    w[k] = findway(i, way)
-    for j in 1:size(way)[2]
-        way[w[k][j], j] = max
-    end
-end
 
-for k in 1:55
-    
+
+function clustergraph(p::PhyOutput, edgevariables::Tuple{String})
+    edges::Matrix{Int64} = Matrix{Int64}(undef, nclusters(p)^2, 2)
+    n = 1
+    for (c1, c2) in Iterators.product(getclusters(p), getclusters(p))
+        edges[n,:] = [c1, c2]
+        n += 1
+    end
+    return edges
 end
-w[1]
-way[500, 1]
-heatmap(way)

@@ -15,6 +15,9 @@ const mp = Mmap
 using LoopVectorization
 using DataStructures
 using DSP
+using StatsBase
+using SimpleWeightedGraphs
+using FFTW
 
 include("types.jl")
 include("filter.jl")

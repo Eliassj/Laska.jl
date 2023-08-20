@@ -4,11 +4,14 @@ authors = ["Elias Sjölin"]
 version = "1.0.0-DEV"
 
 [deps]
+AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 FourierTools = "b18b359b-aebc-45ac-a139-9c0ccbb2871e"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
@@ -18,6 +21,8 @@ Mmap = "a63ad114-7e13-5084-954f-fe012c677804"
 NPZ = "15e1cf62-19b3-5cfa-8e77-841668bca605"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SIMD = "fdea26ae-647d-5447-a871-4b548cad5224"
+SimpleWeightedGraphs = "47aef6b3-ad0c-573a-a1e2-d07658019622"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 TSne = "24678dba-d5e9-5843-a4c6-250288b04835"
 
 [compat]
