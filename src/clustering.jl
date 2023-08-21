@@ -16,12 +16,12 @@ end
 
 
 
-function makeway(A)
-    waymatrix = similar(convolved)
-    waymatrix[:,end] .= convolved[:,end]
+function makeway(A::Matrix)
+    waymatrix = similar(A)
+    waymatrix[:,end] .= A[:,end]
     for j in 2:size(waymatrix)[2] - 1
         for i in 2:(size(waymatrix)[1]-1)
-            waymatrix[i,end-j] = convolved[i,end-j] + minimum(waymatrix[(i-1):(i+1), end - (j - 1)])
+            waymatrix[i,end-j] = A[i,end-j] + minimum(waymatrix[(i-1):(i+1), end - (j - 1)])
         end
     end
     waymatrix[1,:] .= maximum(waymatrix)
@@ -41,13 +41,3 @@ function findway(start, waymatrix)
     return resvec
 end
 
-
-function clustergraph(p::PhyOutput, edgevariables::Tuple{String})
-    edges::Matrix{Int64} = Matrix{Int64}(undef, nclusters(p)^2, 2)
-    n = 1
-    for (c1, c2) in Iterators.product(getclusters(p), getclusters(p))
-        edges[n,:] = [c1, c2]
-        n += 1
-    end
-    return edges
-end

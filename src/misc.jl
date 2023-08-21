@@ -145,3 +145,34 @@ function extendvecthin(v::Vector{Int64})
     )
     return extendvec!(out, v)[:,2]
 end
+
+"""
+    expandgrid(v::Vector{Int64})
+
+
+Similar to expand.grid in R.
+Will return a Matrix containing all combinations of items in v.         
+`[1 2]` is considered the same as `[2 1]`       
+There is no checking for uniqueness of items; ie       
+
+    julia> expandgrid([1,1,1])
+Will return   
+
+    3×2 Matrix{Int64}:
+    1  1
+    1  1
+    1  1
+
+"""
+function expandgrid(v::Vector{Int64})
+    out::Matrix{Int64} = Matrix{Int64}(undef, (binomial(length(v), 2),2))
+    s = 0
+    for i in eachindex(v)
+        c = pop!(v)
+        for (c1, c2) in Iterators.product(c, v)
+            s += 1
+            out[s,:] = [c1 c2]
+        end
+    end
+    return out
+end
