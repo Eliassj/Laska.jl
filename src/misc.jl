@@ -13,11 +13,11 @@ function  getdepths(t::relativeSpikes)
 end
 
 function getclusters(p::PhyOutput)
-    return p._info[!, "cluster_id"]
+    return deepcopy(p._info[!, "cluster_id"])
 end
 
 function getclusters(t::relativeSpikes)
-    return t._info[!, "cluster_id"]
+    return deepcopy(t._info[!, "cluster_id"])
 end
 
 function nclusters(t::relativeSpikes)
@@ -51,9 +51,11 @@ end
 """
     normalize(vec::Vector{Float64}, min::Real = 0, max::Real = 1)
 
-Min-max normalize `vec` between `min` (defaults to 0) and `max` (defaults to 1).
+Returns a min-max normalized version of `vec`. Defaults to 0-1 but custom ranges can be specified.
+
+See [`normalize!`](@ref) for an in-place version
 """
-function normalize(vec::Vector{Float64}, min::Real = 0, max::Real = 1)
+function normalize(vec::Vector{<:Real}, min::Real, max::Real)
     x::Vector{Float64} = deepcopy(vec)
     for v in eachindex(x)
         x[v] = min + ((x[v] - minimum(x)) * (max - min)) / (maximum(x) - minimum(x))
@@ -61,13 +63,36 @@ function normalize(vec::Vector{Float64}, min::Real = 0, max::Real = 1)
     return x
 end
 
-function normalize(vec::Vector{Int64}, min::Real = 0, max::Real = 1)
-    x::Vector{Float64} = Float64.(vec)
+function normalize(vec::Vector{<:Real})
+    x::Vector{Float64} = deepcopy(vec)
     for v in eachindex(x)
-        x[v] = min + ((x[v] - minimum(x)) * (max - min)) / (maximum(x) - minimum(x))
+        x[v] = ((x[v] - minimum(x))) / (maximum(x) - minimum(x))
     end
     return x
 end
+
+
+
+"""
+    normalize!(vec::Vector{<:AbstractFloat}, min::Real, max::Real)
+
+Normalize an `AbstractFloat` vector in place.
+
+See [`normalize`](@ref) for a version that works on non-Float vectors.
+"""
+function normalize!(vec::Vector{<:AbstractFloat})
+    for v in eachindex(vec)
+        vec[v] = ((vec[v] - minimum(vec))) / (maximum(vec) - minimum(vec))
+    end
+end
+
+function normalize!(vec::Vector{<:AbstractFloat}, min::Real, max::Real)
+    for v in eachindex(vec)
+        vec[v] = min + ((vec[v] - minimum(vec)) * (max - min)) / (maximum(vec) - minimum(vec))
+    end
+end
+
+
 
 """
 Add `new` vector to the `info` df of PhyOutput/relativeSpikes.
@@ -165,13 +190,13 @@ Will return
 
 """
 function expandgrid(v::Vector{Int64})
-    out::Matrix{Int64} = Matrix{Int64}(undef, (binomial(length(v), 2),2))
+    out::Matrix{Int64} = Matrix{Int64}(undef, (2, binomial(length(v), 2)))
     s = 0
     for i in eachindex(v)
         c = pop!(v)
         for (c1, c2) in Iterators.product(c, v)
             s += 1
-            out[s,:] = [c1 c2]
+            out[:,s] = [c1 c2]
         end
     end
     return out

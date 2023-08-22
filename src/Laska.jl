@@ -16,6 +16,7 @@ using LoopVectorization
 using DataStructures
 using DSP
 using StatsBase
+using Graphs
 using SimpleWeightedGraphs
 using FFTW
 
@@ -28,6 +29,6 @@ include("e.jl") # Export functions
 include("p.jl") # Plotting/visualization
 include("summarize.jl")
 include("clustering.jl")
-
+include("graphing.jl")
 #include("interactive.jl")
 end

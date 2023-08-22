@@ -70,10 +70,18 @@ function mad!(p::PhyOutput)
     clusters = getclusters(p)
     result = Matrix{Float64}(undef, (length(clusters), 2))
     for (n, c) in enumerate(clusters)
-
         result[n,:] = [c, DataFrames.Statistics.median(abs.(isis[isis[:,1] .== c, 2] .- DataFrames.Statistics.median(isis[isis[:,1] .== c, 2])))]
     end
     insertcols!(p._info, "mad" => result[:,2])
     
     return result
+end
+
+function medianisi!(p::PhyOutput)
+    out = Vector{Float64}(undef, length(getclusters(p)))
+    isis = spikeisi(p)
+    for (n,c) in enumerate(getclusters(p))
+        out[n] = StatsBase.Statistics.median(isis[isis[:,1] .== c, 2])
+    end
+    insertcols!(p._info, "median_isi" => out)
 end
