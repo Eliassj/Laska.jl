@@ -18,6 +18,8 @@ using DSP
 using StatsBase
 using Graphs
 using SimpleWeightedGraphs
+using LinearAlgebra
+LinAlg=LinearAlgebra
 using FFTW
 
 include("types.jl")
