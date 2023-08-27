@@ -41,7 +41,8 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String})
     vardict::Dict{Int64, Vector{Float64}} = Dict(
         vars[r, "cluster_id"] => Vector{Float64}(vars[r, Not("cluster_id")]) for r in 1:length(getclusters(p))
     )
-    # Compute weight vector
+    # Calculate weight vector
+    # Currently calculated as euclidean distance with a gaussian kernel (||x1 - x2||^2/(2*gamma^2))
     gamma = maximum(maximum(values(vardict))) * 0.15
     n = 1
     for (s, d) in zip(sources, destinations)
@@ -62,10 +63,14 @@ function removesmalledges(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64, Flo
     end
 end
 
-function normalizedlaplacian(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64, Float64})
+function normalizedlaplacian(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64, Float64}; type::String = "rw")
     deg = degree_matrix(g)
     adj = adjacency_matrix(g)
-    return deg^(-1/2) * adj * deg^(-1/2)
+    if type == "sym"
+        return deg^(-1/2) * adj * deg^(-1/2)
+    elseif type == "rw"
+        return (collect(deg)^-1) * collect(adj)
+    end
 end
 
 function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64, Float64}, eigvecs::Matrix{Float64}, nvec::Int)
@@ -75,6 +80,7 @@ function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64, Float64}, 
             rem_edge!(g, e)
         end
     end
+    return Dict{Int64, Int64}(n => sign.(eig[:,1])[n] for n in Laska.vertices(g))
 end
 
 # Eigencuts with tresholds

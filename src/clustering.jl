@@ -14,8 +14,6 @@ function normalvector(len, σ, max = 1)
     v = v .* max / maximum(v)
 end
 
-
-
 function makeway(A::Matrix)
     waymatrix = similar(A)
     waymatrix[:,end] .= A[:,end]
