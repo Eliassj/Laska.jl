@@ -1,3 +1,4 @@
+#%%
 using Laska
 using TSne
 using Statistics
@@ -9,9 +10,9 @@ using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg=LinearAlgebra
 using GraphMakie.NetworkLayout
-
+#%%
 ffr = :fr => x -> x > 1
-
+#%%
 @time res = Laska.PhyOutput(
     "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\23-04-24",
     "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0",
@@ -38,7 +39,7 @@ Laska.medianisi!(p)
 
 g, vd, cd = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
 
-Laska.removesmalledges(g, 0.1)
+Laska.removesmalledges(g, 0.5)
 
 ed = collect(Laska.edges(g))
 Laska.dst(ed[1])
@@ -59,8 +60,8 @@ GLMakie.activate!()
 heatmap(eig)
 
 Laska.ploteigenvector(eig, 3)
-srt = sortperm(eig)
-text(1:length(eig[:,2]), eig[:,], text=repr.([vd[v] for v in 1:52]))
+srt = sortperm(eig[:,3])
+text(1:length(eig[:,2]), eig[:,3][srt], text=repr.([vd[v] for v in 1:52]))
 
 Laska.greedy_color(g)
 
@@ -73,7 +74,7 @@ eigvals = LinAlg.eigvals(A)
 Laska.eigencut!(g, eig, 1)
 plotit()
 scatter(eigvals)
-scatter(eig[1,:])
+scatter(eig[:,4])
 
 
 
