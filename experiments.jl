@@ -10,13 +10,15 @@ using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg=LinearAlgebra
 using GraphMakie.NetworkLayout
+
 #%%
 ffr = :fr => x -> x > 1
 #%%
+
 @time res = Laska.PhyOutput(
-    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\23-04-24",
-    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0",
-    "D:\\e1594\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0\\.laska\\e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0.bin",
+    "/run/media/elias/T7/e1594/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0/23-04-24/",
+    "/run/media/elias/T7/e1594/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0/",
+    "/run/media/elias/T7/e1594/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0/.laska/e1594_Naive_Training_1h_Forelimb_1.5mA_CF_250uA_g0_imec0.bin",
     filters = (ffr,)
 )
 
@@ -39,7 +41,7 @@ Laska.medianisi!(p)
 
 g, vd, cd = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
 
-Laska.removesmalledges(g, 0.5)
+Laska.removesmalledges(g, 0.3)
 
 ed = collect(Laska.edges(g))
 Laska.dst(ed[1])
@@ -48,10 +50,10 @@ hist(Laska.weight.(Laska.edges(g)), bins=500)
 
 norm=collect(Laska.normalizedlaplacian(g))
 
-srt = sortperm(eig[:,2])
+srt = sortperm(eig[:,3])
 heatmap(collect(Laska.adjacency_matrix(g))[srt, srt])
 
-v
+
 collect(Laska.Graphs.weights(g))
 GLMakie.activate!()
 
@@ -59,24 +61,32 @@ GLMakie.activate!()
 
 heatmap(eig)
 
-Laska.ploteigenvector(eig, 3)
+Laska.ploteigenvector(eig, 33)
 srt = sortperm(eig[:,3])
 text(1:length(eig[:,2]), eig[:,3][srt], text=repr.([vd[v] for v in 1:52]))
 
 Laska.greedy_color(g)
 
 heatmap(eig)
-hist(eig[:,3], bins=500)
+hist(eig[:,1], bins=500)
 
 A = collect(Laska.normalizedlaplacian(g))
-eig = LinAlg.eigvecs(A)
+eig = real.(LinAlg.eigvecs(A))
 eigvals = LinAlg.eigvals(A)
-Laska.eigencut!(g, eig, 1)
+
+Laska.maxeigvec(eig)
+
+Laska.eigencut!(g, eig, 5, etresh = 0.1)
 plotit()
 scatter(eigvals)
-scatter(eig[:,4])
+scatter(eig[:,33])
 
-
+while length(Laska.connected_components(g)) < 15
+    A = collect(Laska.normalizedlaplacian(g))
+eig = real.(LinAlg.eigvecs(A))
+r=Laska.eigencut!(g, eig, Laska.maxeigvec(eig), etresh = 0.01)
+    println(r)
+end
 
 collect(Laska.edges(g))
 

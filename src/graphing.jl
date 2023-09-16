@@ -85,14 +85,15 @@ function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, e
 end
 
 # Eigencuts with tresholds
-function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, eigvecs::Matrix{Float64}, nvec::Int, ncuttresh::Float64)
+function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, eigvecs::Matrix{Float64}, nvec::Int; etresh::Float64)
     removededges::Vector{SimpleWeightedEdge{Int64,Float64}} = []
     for e in edges(g)
-        if eigvecs[src(e), nvec] * eigvecs[dst(e), nvec] < 0
+        if (eigvecs[src(e), nvec] > etresh || eigvecs[dst(e), nvec] > etresh) && eigvecs[src(e), nvec] * eigvecs[dst(e), nvec] < 0
             rem_edge!(g, e)
             push!(removededges, e)
         end
     end
+    return removededges
 end
 
 function ploteigenvector(eig::Matrix, n::Int)
