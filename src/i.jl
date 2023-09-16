@@ -4,30 +4,30 @@
 struct PhyOutput
     _spiketimes::Matrix{Int64}
     _info::DataFrames.DataFrame
-    _meta::Dict{SubString{String}, SubString{String}}
+    _meta::Dict{SubString{String},SubString{String}}
     _binpath::String
-    _triggers::Union{Vector{Int}, Nothing}
+    _triggers::Union{Vector{Int},Nothing}
 
-"""
-    PhyOutput(
-        phydir::String = "",
-        glxdir::String = "",
-        same::Bool = false
-    )
+    """
+        PhyOutput(
+            phydir::String = "",
+            glxdir::String = "",
+            same::Bool = false
+        )
 
 
-`phydir`: Optional. The directory containing kilosort/phy output.
-`glxdir`: Optional. The directory containing spikeGLX output (.ap.bin/.ap.meta)
-`same`: If true spikeGLX output will be assumed to be in the same directory as Kilosort/Phy output.
+    `phydir`: Optional. The directory containing kilosort/phy output.
+    `glxdir`: Optional. The directory containing spikeGLX output (.ap.bin/.ap.meta)
+    `same`: If true spikeGLX output will be assumed to be in the same directory as Kilosort/Phy output.
 
-Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spikeGLX metadata(_meta) and the path to the associated .ap.bin file(_binpath).
-"""
+    Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spikeGLX metadata(_meta) and the path to the associated .ap.bin file(_binpath).
+    """
     function PhyOutput(
-        phydir::String = "",
-        glxdir::String = "",
-        triggerpath::String = "",
-        same::Bool = false;
-        filters = nothing
+        phydir::String="",
+        glxdir::String="",
+        triggerpath::String="",
+        same::Bool=false;
+        filters=nothing
     )
         if Base.length(phydir) == 0
             println("Select phy/kilosort output directory")
@@ -41,23 +41,29 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
             glxdir = phydir
         end
         println("Importing good clusters")
-        clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_clusters.npy"))
-        times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir*"\\spike_times.npy")[:,1])
+        if Sys.iswindows()
+            clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
+            times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
+            info::DataFrames.DataFrame = CSV.read(phydir * "\\cluster_info.tsv", DataFrame)
+        else
+            clusters = convert(Vector{Int64}, NPZ.npzread(phydir * "/spike_clusters.npy"))
+            times = convert(Vector{Int64}, NPZ.npzread(phydir * "/spike_times.npy")[:, 1])
+            info = CSV.read(phydir * "/cluster_info.tsv", DataFrame)
+        end
         spiketimes::Matrix{Int64} = [clusters times]
-        spiketimes = spiketimes[sortperm(spiketimes[:,1]),:] # sort by cluster
-        info::DataFrames.DataFrame = CSV.read(phydir*"\\cluster_info.tsv", DataFrame)
+        spiketimes = spiketimes[sortperm(spiketimes[:, 1]), :] # sort by cluster
 
         isgood(group) = group == "good"
-        info = subset(info, :group => ByRow(isgood), skipmissing = true)
+        info = subset(info, :group => ByRow(isgood), skipmissing=true)
 
         if typeof(filter) != Nothing
             filterinfo(info, filters)
         end
 
         ininfo(cluster) = cluster in info[!, "cluster_id"]
-        spiketimes = spiketimes[ininfo.(spiketimes[:,1]),:]
+        spiketimes = spiketimes[ininfo.(spiketimes[:, 1]), :]
 
-        glxfiles = readdir(glxdir, join = true)
+        glxfiles = readdir(glxdir, join=true)
         binfile::String = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"][1]
         metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
 
@@ -86,27 +92,32 @@ Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spike
 
     end
 
-    
+
 end #struct phyoutput
+
+function hej()
+    println("Hej")
+
+end
 
 # Extract triggers from Vector
 
 function gettrig(t::Vector)
     r::Vector = findall(!iszero, t)
-    p::Matrix{Int64} = hcat(getindex.(r, 1), getindex.(r-circshift(r, 1), 1))
-    s::Vector{Int64} = p[p[:,2] .!= 1, 1]
+    p::Matrix{Int64} = hcat(getindex.(r, 1), getindex.(r - circshift(r, 1), 1))
+    s::Vector{Int64} = p[p[:, 2].!=1, 1]
     return s
 end
 
 # TODO Add methods for channel spec types?
 function getchan(
     p::PhyOutput,
-    ch::Union{Int, Vector{Int}, UnitRange{Int64}},
-    tmin::Union{Float64, Int},
-    tmax::Union{Float64, Int, String},
-    converttoV::Bool = true,
-    threading::Bool = false
-    )
+    ch::Union{Int,Vector{Int},UnitRange{Int64}},
+    tmin::Union{Float64,Int},
+    tmax::Union{Float64,Int,String},
+    converttoV::Bool=true,
+    threading::Bool=false
+)
 
     filemax::Int64 = Int64(parse(Int64, p._meta["fileSizeBytes"]) / parse(Int64, p._meta["nSavedChans"]) / 2)
     samplfrq::Float64 = parse(Float64, p._meta["imSampRate"])
@@ -135,7 +146,7 @@ function getchan(
 
     # Convert tmin to sample frequency
     tmin::Int64 = Int(round((tmin * samplfrq))) + 1::Int64
-    
+
     if tmax > filemax
         ArgumentError("tmax larger than length of recording")
     end
@@ -146,7 +157,7 @@ function getchan(
     #it::Vector{Tuple{Int64, Int64}} = collect(enumerate(len))
 
     if threading
-        r::Union{Matrix{Int16}, Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
+        r::Union{Matrix{Int16},Vector{Int16}} = Matrix{Int16}(undef, length(len), length(ch))
         t::Vector{UnitRange{Int64}} = collect(Iterators.partition(len, 10000))
         n::Vector{UnitRange{Int64}} = collect(Iterators.partition(1:length(len), 10000))
         it = tuple.(n, t)
@@ -163,7 +174,7 @@ function getchan(
     end
 
     if converttoV
-        conv::Union{Matrix{Float64}, Vector{Float64}} = tovolts(p._meta, r)
+        conv::Union{Matrix{Float64},Vector{Float64}} = tovolts(p._meta, r)
         return conv
     else
         return r
@@ -173,30 +184,30 @@ end # Getchan
 
 
 
-function importchx!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Matrix{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+function importchx!(channels::Union{Int,Vector{Int},UnitRange{Int64}}, a::Matrix{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64},UnitRange{Int64}}})
     for (ntim, t) in i
         a[ntim, :] = transpose(mm[channels, t])
-     end 
+    end
     return a
 end
 
-function importch1!(channels::Union{Int, Vector{Int}, UnitRange{Int64}}, a::Vector{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64}, UnitRange{Int64}}})
+function importch1!(channels::Union{Int,Vector{Int},UnitRange{Int64}}, a::Vector{Int16}, mm::Matrix{Int16}, i::Vector{Tuple{UnitRange{Int64},UnitRange{Int64}}})
     for (ntim, t) in i
         a[ntim, 1] = mm[channels, t]
-    end 
+    end
     return a
 end
 
 function spikemmap(p::PhyOutput)
     n::Int = parse(Int, p._meta["nSavedChans"])
-    s::Int = Int(parse(Int, p._meta["fileSizeBytes"]) / (2*n))
+    s::Int = Int(parse(Int, p._meta["fileSizeBytes"]) / (2 * n))
     tmp::IOStream = open(p._binpath, "r")
-    m::Array{Int16, 2} = mp.mmap(tmp, Array{Int16, 2}, (n, s), 0)
+    m::Array{Int16,2} = mp.mmap(tmp, Array{Int16,2}, (n, s), 0)
     close(tmp)
     return m
 end # spikemmap
 
-function tovolts(meta::Dict{SubString{String}, SubString{String}}, i::Union{Vector{Int16}, Array{Int16}})
+function tovolts(meta::Dict{SubString{String},SubString{String}}, i::Union{Vector{Int16},Array{Int16}})
     Imax::Float64 = parse(Float64, meta["imMaxInt"])
     Vmax::Float64 = parse(Float64, meta["imAiRangeMax"])
     if meta["imDatPrb_type"] == "0"
@@ -208,7 +219,7 @@ function tovolts(meta::Dict{SubString{String}, SubString{String}}, i::Union{Vect
         gain::Float64 = 80
     end
     cfactor::Float64 = Vmax / Imax / gain
-    return i .*cfactor
+    return i .* cfactor
 end # tovolts
 
 
@@ -222,7 +233,7 @@ function importchanint16(path::String="")
         close(tmp)
         return res
     elseif path[end-3:end] == ".csv"
-        res2::Matrix = Matrix(CSV.read(path, DataFrame, header = false))
+        res2::Matrix = Matrix(CSV.read(path, DataFrame, header=false))
         return res2
     else
         ArgumentError("Only '.bin' or '.csv' files allowed.")

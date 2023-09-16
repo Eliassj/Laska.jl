@@ -8,7 +8,7 @@ function getdepths(p::PhyOutput)
     return unique(p._info[!, "depth"])
 end
 
-function  getdepths(t::relativeSpikes)
+function getdepths(t::relativeSpikes)
     return unique(t._info[!, "depth"])
 end
 
@@ -37,11 +37,11 @@ function getspiketimes(t::relativeSpikes)
 end
 
 function getspiketimes(p::PhyOutput, cluster::Int64)
-    return p._spiketimes[p._spiketimes[:,1] .== cluster,:]
+    return p._spiketimes[p._spiketimes[:, 1].==cluster, :]
 end
 
 function getspiketimes(t::relativeSpikes, cluster::Int64)
-    return t._spiketimes[t._spiketimes[:,1] .== cluster,:]
+    return t._spiketimes[t._spiketimes[:, 1].==cluster, :]
 end
 
 function ntriggers(t::relativeSpikes)
@@ -102,7 +102,7 @@ If no `keys` are provided the vector is assumed to be sorted correctly to begin 
 function addinfo!(p::PhyOutput, new::Vector, keys::Vector, colname::String)
     DataFrames.sort!(p._info, :cluster_id)
     sort = sortperm(keys)
-    if keys[sort] != p._info[!,"cluster_id"]
+    if keys[sort] != p._info[!, "cluster_id"]
         throw(ArgumentError("keys does not match clusters in p"))
     end
     new = new[sort]
@@ -112,7 +112,7 @@ end
 function addinfo!(t::relativeSpikes, new::Vector, keys::Vector, colname::String)
     DataFrames.sort!(t._info, :cluster_id)
     sort = sortperm(keys)
-    if keys[sort] != p._info[!,"cluster_id"]
+    if keys[sort] != t._info[!, "cluster_id"]
         throw(ArgumentError("keys does not match clusters in p"))
     end
     new = new[sort]
@@ -134,7 +134,7 @@ function extendvec(v::Vector)
         length(minimum(v):maximum(v)),
         2
     )
-    out[:,1] = minimum(v):maximum(v)
+    out[:, 1] = minimum(v):maximum(v)
     v = v .- minimum(v) .+ 1
 
     out[v, 2] .= 1
@@ -142,10 +142,10 @@ function extendvec(v::Vector)
 end
 
 function extendvec!(out::Matrix{Int64}, v::Vector{Int64})
-    out[:,1] = minimum(v):maximum(v)
+    out[:, 1] = minimum(v):maximum(v)
     v::Vector{Int64} = v .- minimum(v) .+ 1
 
-    
+
     @simd for i in eachindex(v)
         out[v[i], 2] = 1
     end
@@ -168,7 +168,7 @@ function extendvecthin(v::Vector{Int64})
         length(minimum(v):maximum(v)),
         2
     )
-    return extendvec!(out, v)[:,2]
+    return extendvec!(out, v)[:, 2]
 end
 
 """
@@ -196,7 +196,7 @@ function expandgrid(v::Vector{Int64})
         c = pop!(v)
         for (c1, c2) in Iterators.product(c, v)
             s += 1
-            out[:,s] = [c1 c2]
+            out[:, s] = [c1 c2]
         end
     end
     return out

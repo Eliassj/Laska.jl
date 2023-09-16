@@ -38,4 +38,3 @@ function findway(start, waymatrix)
     end
     return resvec
 end
-
