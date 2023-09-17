@@ -32,5 +32,6 @@ include("p.jl") # Plotting/visualization
 include("summarize.jl") # Summarize by time, depth, etc
 include("clustering.jl") # Clustering
 include("graphing.jl") # Create graph representations
+include("importknown.jl")
 #include("interactive.jl")
 end
