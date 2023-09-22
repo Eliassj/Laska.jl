@@ -1,4 +1,5 @@
-# IMPORTING
+# IMPORTING but with better wide arrays instead of long. Usually more effective
+# memory access(?)
 
 # Initialize a PhyOutput object
 struct PhyOutput
@@ -8,11 +9,15 @@ struct PhyOutput
     _binpath::String
     _triggers::Union{Vector{Int},Nothing}
 
-    """      PhyOutput(
-        phydir::String = "",
-        glxdir::String = "",
-          same::Bool = false#       
-    `phydir`: Optional. The directy containing kilosort/phy output.
+    """
+        PhyOutput(
+            phydir::String = "",
+            glxdir::String = "",
+            same::Bool = false
+        )
+
+
+    `phydir`: Optional. The directory containing kilosort/phy output.
     `glxdir`: Optional. The directory containing spikeGLX output (.ap.bin/.ap.meta)
     `same`: If true spikeGLX output will be assumed to be in the same directory as Kilosort/Phy output.
 
@@ -20,6 +25,7 @@ struct PhyOutput
     """
 
 end #struct phyoutput
+
 
 function importphy(
     phydir::String="",
@@ -49,18 +55,20 @@ function importphy(
         times = convert(Vector{Int64}, NPZ.npzread(phydir * "/spike_times.npy")[:, 1])
         info = CSV.read(phydir * "/cluster_info.tsv", DataFrame)
     end
-    spiketimes::Matrix{Int64} = [clusters times]
-    spiketimes = spiketimes[sortperm(spiketimes[:, 1]), :] # sort by cluster
+    spiketimes::Matrix{Int64} = Matrix(undef, 2, length(times))
+    spiketimes[1, :] = clusters
+    spiketimes[2, :] = times
+    spiketimes = spiketimes[:, sortperm(spiketimes[1, :])] # sort by cluster
 
     isgood(group) = group == "good"
     info = subset(info, :group => ByRow(isgood), skipmissing=true)
 
-    if typeof(filter) != Nothing
+    if typeof(filters) != Nothing
         filterinfo(info, filters)
     end
 
     ininfo(cluster) = cluster in info[!, "cluster_id"]
-    spiketimes = spiketimes[ininfo.(spiketimes[:, 1]), :]
+    spiketimes = spiketimes[:, ininfo.(spiketimes[1, :])]
 
     glxfiles = readdir(glxdir, join=true)
     binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
@@ -96,6 +104,12 @@ function importphy(
 
 end
 
+
+
+function hej()
+    println("Hej")
+
+end
 
 # Extract triggers from Vector
 
@@ -219,6 +233,7 @@ function tovolts(meta::Dict{SubString{String},SubString{String}}, i::Union{Vecto
     return i .* cfactor
 end # tovolts
 
+
 function importchanint16(path::String="")
     if path == ""
         path = Gtk.open_dialog_native("Select trigger file", action=GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN)
@@ -235,3 +250,4 @@ function importchanint16(path::String="")
         ArgumentError("Only '.bin' or '.csv' files allowed.")
     end
 end #importchan
+

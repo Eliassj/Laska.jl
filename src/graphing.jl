@@ -43,7 +43,8 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String})
     )
     # Calculate weight vector
     # Currently calculated as euclidean distance with a gaussian kernel (||x1 - x2||^2/(2*gamma^2))
-    gamma = maximum(maximum(values(vardict))) * 0.15
+    #gamma = maximum(maximum(values(vardict))) * 0.15
+    gamma = 1
     n = 1
     for (s, d) in zip(sources, destinations)
         weights[n] = exp(-sum((vardict[vdict[s]] .- vardict[vdict[d]]) .^ 2) / (2 * (gamma^2)))

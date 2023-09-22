@@ -190,3 +190,4 @@ function autocorrelogramfft(p::PhyOutput, cluster::Int64, binsize::Int64)
 
     return out
 end
+

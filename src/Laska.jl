@@ -23,6 +23,7 @@ LinAlg = LinearAlgebra
 using FFTW
 
 include("types.jl") # Type definitions
+#include("import.jl")
 include("filter.jl") # Filter spikes
 include("i.jl") # Import functions
 include("t.jl") # Transforming functions
@@ -33,5 +34,6 @@ include("summarize.jl") # Summarize by time, depth, etc
 include("clustering.jl") # Clustering
 include("graphing.jl") # Create graph representations
 include("importknown.jl")
-#include("interactive.jl")
+include("interactive.jl")
 end
+

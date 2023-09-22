@@ -1,60 +1,41 @@
+#############################
+#
+# Functions for windows etc
+#
+#############################
 
-using GLMakie
-#function plotchannelsinteractive(p::PhyOutput, channels, tmin, tmax; col = standardcol)
-    GLMakie.activate!()
-    tmax = Observable(1.0)
-    tmin = Observable(0.0)
-    txt = "+$tmax"
+function clickedyes(w)
+    global ans = true
+end
 
-    data = Observable(Laska.getchan(p, channels, tmin[], tmax[], true, true))
-    x = Observable(collect(0:size(data[], 1)-1) ./ 30000)
-    ysep = maximum(abs.(data[])) .* collect((1:length(channels)) .-1)
-    fig = Figure(resolution = (500, 600), fullscreen = true)
-    pltgrid = fig[1,1:4] = GridLayout()
-    ctrlgrid = fig[2,1:4] = GridLayout()
+function clickedno(w)
+    global ans = false
+end
 
-    inputmin = Textbox(
-        ctrlgrid[1,2],
-        placeholder = "Tmin",
-        reset_on_defocus = true
-    )
-    inputmin.stored_string = "0"
-    inputmax = Textbox(
-        ctrlgrid[1,4],
-        placeholder = "Length",
-        reset_on_defocus = true
-    )
-    inmin = inputmin.stored_string
-    inmax = inputmax.stored_string
+function yesnodialog(question::String)
+    yesb = GtkButton("Yes")
+    nob = GtkButton("No")
+    win = GtkWindow(question, 100, 150)
+    vbox = GtkBox(:v)
+    push!(win, vbox)
+    push!(vbox, yesb)
+    push!(vbox, nob)
+    showall(win)
+    ans::Int = 2
 
-    
-
-
-    Label(ctrlgrid[1,3],
-        "-"
-    )
-
-    
-
-    ax = Axis(
-        pltgrid[1,:],
-        xlabel = "Time [s]",
-        ylabel = ""
-    )    
-    for (n, ch) in enumerate(channels)
-        lines!(ax, collect(0:size(data[], 1)-1) ./ 30000, data[][:,n] .- ysep[n], linewidth = 1)
+    function button_clicked_yes(widget)
+        destroy(win)
+        ans = 1
     end
 
-    on(inmax) do nt
-        data[] = Laska.getchan(p, channels, tmin[], tmin[]+parse(Float64, nt), true, true)
-        empty!(ax)
-        for (n, ch) in enumerate(channels)
-            lines!(ax, collect(0:size(data[], 1)-1) ./ 30000, data[][:,n] .- ysep[n], linewidth = 1)
-        end
-        @show size(data[])
+    function button_clicked_no(widget)
+        destroy(win)
+        ans = 0
     end
 
-    colgap!(ctrlgrid, 0)
-    rowsize!(fig.layout, 2, Auto(0.05))
-    display(fig)
-#end
+    while ans == 2
+        id = signal_connect(button_clicked_yes, yesb, "clicked")
+        id2 = signal_connect(button_clicked_no, nob, "clicked")
+    end
+    return Bool(ans)
+end

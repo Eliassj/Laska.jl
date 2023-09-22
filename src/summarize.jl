@@ -85,3 +85,17 @@ function medianisi!(p::PhyOutput)
     end
     insertcols!(p._info, "median_isi" => out)
 end
+
+# Amplitude of response, add delay to max response and duration of response(?)
+function responseAMP(t::relativeSpikes, timewindow::Int64 = 50, period::Int64 = 5)
+    rel = relresponse(t, period, clusterbaseline(t))
+    filt = findall(x -> t._stimulations["US"] * 30.0 < x <  (t._stimulations["US"] + timewindow) * 30.0, rel[:,2])
+    rel = rel[filt,:]
+    clusters = Float64.(getclusters(t))
+    out::Matrix{Float64} = Matrix(undef, length(clusters), 2)
+    out[:,1] = clusters
+    for (n,c) in enumerate(out[:,1])
+        out[n, 2] = maximum(abs.(rel[rel[:,1] .== c,3] .- 1))
+    end
+    return ou t
+end
