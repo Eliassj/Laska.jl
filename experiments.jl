@@ -18,7 +18,7 @@ ffr = :fr => x -> x > 1
 @time res = Laska.importphy(
     "/home/elias/illerdata",
     "/home/elias/illerdata",
-    "/home/elias/illerdata/768.exported.imec0.ap.csv",
+    "/home/elias/illerdata/triggerchane15941h.bin",
     filters=(ffr,)
 )
 

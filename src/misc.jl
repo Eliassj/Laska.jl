@@ -201,3 +201,22 @@ function expandgrid(v::Vector{Int64})
     end
     return out
 end
+
+"""
+    indlookup(mat::Matrix{T}, col::Int = 1) where {T<:Real}
+
+Create a 'Dict{T, Vector{Int64}}' for indicies of unique values in `mat[:,col]`
+"""
+function indlookup(mat::Matrix{T}, col::Int=1) where {T<:Real}
+    out::Dict{T,Vector{Int64}} = Dict(
+        c => findall(x -> x == c, mat[:, col]) for c in Set(mat[:, col])
+    )
+    return out
+end
+
+function indlookup(mat::Matrix{T}, keys::Vector{T}, col::Int=1) where {T<:Real}
+    out::Dict{T,Vector{Int64}} = Dict(
+        c => findall(x -> x == c, mat[:, col]) for c in keys
+    )
+    return out
+end

@@ -225,7 +225,7 @@ function importchanint16(path::String="")
     end
     if path[end-3:end] == ".bin"
         tmp::IOStream = open(path, "r")
-        res = Array(reinterpret(Int16, read(tmp)))
+        res = Vector(reinterpret(Int16, read(tmp)))
         close(tmp)
         return res
     elseif path[end-3:end] == ".csv"
