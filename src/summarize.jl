@@ -4,24 +4,38 @@ function spikedict(p::Laska.PhyOutput)
     return Dict{Int64,Vector{Int64}}(c => p._spiketimes[p._spiketimes[:, 1].==c, 2] for c in p._info[!, "cluster_id"])
 end
 
+"""
+Calculate the number of spikes for each cluster/period(ms)
 
-function spikesper(p::Laska.PhyOutput, period::Float64=10.0)
-    period = period * parse(Float64, p._meta["imSampRate"]) / 1000
-    t = Matrix{Int64}(undef, size(p._spiketimes))
-    t[:, 1] = p._spiketimes[:, 1]
-    t[:, 2] = Int.(ceil.(p._spiketimes[:, 2] ./ period) .* period)
-    #tmp::Matrix{Int64} = zeros(Int64, Int(maximum(t[:,2])/300)+1, 3)
-    noll::Vector{Int64} = zeros(Int64, Int(maximum(t[:, 2]) / period) + 1)
-    tmp = Vector{Int64}(collect(0:period:Int(maximum(t[:, 2]))))
-    out = collect(Iterators.product(p._info[!, "cluster_id"], collect(0:period:Int(maximum(t[:, 2])))))
-    out = Matrix{Int64}(undef, Int((maximum(t[:, 2]) / period) + 1) * size(p._info)[1], 3)
-    out[:, 2] = repeat(tmp, Int(size(out)[1] / length(tmp)))
-    pos = 1
-    for c in p._info["cluster_id"]
-        for time in tmp
+Returns a 3-column matrix with cluster, time, n-spikes.
 
+"""
+function spikesper(p::Laska.PhyOutput, period::Int64)
+    period::Int64 = Int64(period * parse(Float64, p._meta["imSampRate"]) / 1000)
+
+    timesum = deepcopy(p._spiketimes)
+    @simd for t in 1:length(timesum[:, 1])
+        timesum[t, 2] = floor(timesum[t, 2] / period) * period
+    end
+
+    ex = extrema(timesum[:, 2])
+    resmatrix::Matrix{Int64} = Matrix{Int64}(undef, (Int(length(p._info[!, "cluster_id"]) * length(ex[1]:period:ex[2])), 3))
+    n::Int = 1
+    times = ex[1]:period:ex[2]
+    for c in getclusters(p)
+        @simd for t in eachindex(times)
+            @inbounds resmatrix[n, :] = [c times[t] 0]
+            n += 1
         end
     end
+
+    findhash::Vector{UInt64} = hash.(resmatrix[:, 1], hash.(resmatrix[:, 2]))
+    indlookup = Dict(findhash[n] => n for n in eachindex(findhash))
+    hashiter = hash.(timesum[:, 1], hash.(timesum[:, 2]))
+
+    @inline incrres!(resmatrix, indlookup, hashiter, 3)
+
+    return resmatrix
 end
 
 # 2|ISIn+1 − ISIn|/(ISIn+1 + ISIn)
@@ -109,4 +123,16 @@ function responseAMP(t::relativeSpikes, stimulation::String; timewindow::Int64=5
         out[n, 2:3] = rel[indices[c], 2:3][mx, :]
     end
     return out
+end
+
+function responseduration(t::relativeSpikes, stimulation::String, period::Int64=5)
+    rel = relresponse(t, period, clusterbaseline(t))
+    rel = rel[findall(x -> x > t._stimulations[stimulation] * 30), :]
+
+
+end
+
+function _convolveresponse(invec::Vector{Float64}, kernel_len::Int64)
+    kernel = fill(1 / kernel_len, kernel_len)
+    return conv(invec, kernel)
 end

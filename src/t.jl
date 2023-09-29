@@ -103,19 +103,26 @@ function spikesper(t::relativeSpikes, period::Int64=30)
     lookhash = hash.(timesum[:, 1], hash.(timesum[:, 2], hash.(timesum[:, 3])))
     indlookup = Dict(hashlib[n, 1] => n for n in eachindex(hashlib[:, 1]))
 
-    incrres!(resmatrix, indlookup, lookhash)
+    incrres!(resmatrix, indlookup, lookhash, 4)
     return resmatrix[sortperm(resmatrix[:, 1]), :]
 end
 
-function incrres!(r::Matrix{Int64}, ind::Dict{UInt64,Int64}, v::Vector{UInt64})
+function incrres!(r::Matrix{Int64}, ind::Dict{UInt64,Int64}, v::Vector{UInt64}, col::Int)
     for i in v
-        @inbounds r[ind[i], 4] += 1
+        r[ind[i], col] += 1
     end
 end
 
 
 # TODO Separate into 1 function for single bins and 1 for summarizing by cluster/depth/triggertime
 # ie by cluster & every n:th trigger
+
+"""
+Compute the relative response compared to a baseline (currently only by cluster.)
+
+Returns: A 'Matrix{Float64}' wit 3 columns: cluster, time(30kHz), relative response
+
+"""
 function relresponse(t::relativeSpikes, period::Int64, baseline::ClusterBaseline)
     absolutes::Matrix{Int64} = spikesper(t, period)
     re::Matrix{Float64} = Float64.(absolutes)
