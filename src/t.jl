@@ -13,7 +13,7 @@ struct relativeSpikes
     _stimulations::Union{Dict,Nothing}
     _specs::Dict
 
-    function relativeSpikes(p::Laska.PhyOutput, back::Int=500, forward::Int=600; context::Dict=Dict())
+    function relativeSpikes(p::Laska.PhyOutput, context::Dict=Dict(); back::Int=500, forward::Int=600)
         spikes = filtertriggers(p, Float64(back), Float64(forward))
         ntrig = maximum(spikes[:, 3])
         specs = Dict(
@@ -107,6 +107,15 @@ function spikesper(t::relativeSpikes, period::Int64=30)
     return resmatrix[sortperm(resmatrix[:, 1]), :]
 end
 
+
+"""
+
+r = Results-matrix where counts are stored.           
+ind = Dict in the format hash => row index of r where rows in cols to index by result in the same hash.             
+v = Vector of hashes, each corresponding to a row in r and an entry in ind, to iterate over.            
+col = Which col to store results in.
+
+"""
 function incrres!(r::Matrix{Int64}, ind::Dict{UInt64,Int64}, v::Vector{UInt64}, col::Int)
     for i in v
         r[ind[i], col] += 1

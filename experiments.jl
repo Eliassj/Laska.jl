@@ -1,3 +1,4 @@
+using Base: Forward
 #%%
 using Laska
 using TSne
@@ -22,7 +23,7 @@ ffr = :fr => x -> x > 1
     filters=(ffr,)
 )
 
-@time tes = Laska.relativeSpikes(res, context=Dict("US" => 300, "CS" => 0))
+@time tes = Laska.relativeSpikes(res, Dict("US" => 300, "CS" => 0), forward=1500)
 
 
 data = Laska.getchan(res, 375:385, 0, 0.3, true, true)
@@ -103,3 +104,41 @@ function plotit()
     display(f)
 end
 
+
+stab = Laska.stability(res, 0.4)
+
+for c in Laska.getclusters(res)
+    println(c, ": ", stab[c])
+end
+
+r = Laska.spikesper(res, 10000)
+
+cluster = 1118
+data = r[r[:, 1].==cluster, 3]
+sd = Statistics.median(data)
+fr = filter(:cluster_id => x -> x == cluster, res._info)[!, "fr"][1]
+fig = Figure()
+ax = Axis(fig[1, 1])
+lines!(
+    ax,
+    data
+)
+hlines!(
+    [sd - (sd * 0.4), sd + (sd * 0.4)],
+    color=:red
+)
+display(fig)
+
+relative1 = Laska.relresponse(tes, 25, Laska.clusterbaseline(tes))
+
+relative = relative1[relative1[:, 1].==cluster, 3]
+data2 = Laska._convolveresponse(relative, 10)
+
+
+fig = Figure()
+ax = Axis(fig[1, 1])
+lines!(
+    ax,
+    data2
+)
+display(fig)

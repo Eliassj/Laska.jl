@@ -125,14 +125,33 @@ function responseAMP(t::relativeSpikes, stimulation::String; timewindow::Int64=5
     return out
 end
 
-function responseduration(t::relativeSpikes, stimulation::String, period::Int64=5)
+function responseduration(t::relativeSpikes, stimulation::String, tol::Float64, period::Int64=25)
     rel = relresponse(t, period, clusterbaseline(t))
-    rel = rel[findall(x -> x > t._stimulations[stimulation] * 30), :]
+    rel = rel[findall(x -> x > t._stimulations[stimulation] * 30, rel[:, 2]), :]
+    rel = rel[findall(x -> 1.0 - tol < x < 1.0 + tol, rel[:, 3]), :]
 
-
+    return rel
 end
 
 function _convolveresponse(invec::Vector{Float64}, kernel_len::Int64)
     kernel = fill(1 / kernel_len, kernel_len)
     return conv(invec, kernel)
+end
+
+"""
+Returns a dict containing clusters => stability value.
+
+Stability is calculated as number of `periods` that fall within the median number of spikes/period +/- median number of spikes * 'mdfactor'
+"""
+function stability(p::PhyOutput; mdfactor::Float64=0.2, period::Int64=1000)
+    per = spikesper(p, period)
+    out = Dict{Int64,Float64}()
+    for c in getclusters(p)
+        #fr = filter(:cluster_id => x -> x == c, p._info)[!, "fr"][1]
+        @inbounds v = @view(per[per[:, 1].==c, 3])
+        md = median(v)
+
+        out[c] = length(v[md-md*mdfactor.<v.<md+md*mdfactor]) / length(v)
+    end
+    return out
 end
