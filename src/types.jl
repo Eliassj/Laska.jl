@@ -1,6 +1,6 @@
 struct ClusterBaseline
-    x::Dict{Int64, Matrix{Float64}}
-    function ClusterBaseline(c::Dict{Int64, Matrix{Float64}})
+    x::Dict{Int64,Matrix{Float64}}
+    function ClusterBaseline(c::Dict{Int64,Matrix{Float64}})
         new(c)
     end
 end
@@ -14,9 +14,9 @@ Base.show(io::IO, clusterbaseline::ClusterBaseline) = println(
 )
 
 struct DepthBaseline
-    x::Dict{Int64, Matrix{Float64}}
-    function DepthBaseline(d::Dict{Int64, Matrix{Float64}})
-        new(d)
+    x::Dict{Int64,Matrix{Float64}}
+    function DepthBaseline(d::Dict{Int64,Matrix{Float64}})
+        return new(d)
     end
 end
 

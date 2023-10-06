@@ -11,12 +11,12 @@ struct relativeSpikes
     _meta::Dict{SubString{String},SubString{String}}
     _binpath::String
     _stimulations::Union{Dict,Nothing}
-    _specs::Dict
+    _specs::Dict{String,Int64}
 
     function relativeSpikes(p::Laska.PhyOutput, context::Dict=Dict(); back::Int=500, forward::Int=600)
         spikes = filtertriggers(p, Float64(back), Float64(forward))
         ntrig = maximum(spikes[:, 3])
-        specs = Dict(
+        specs::Dict{String,Int64} = Dict(
             "back" => back,
             "forward" => forward,
             "ntrig" => ntrig
@@ -53,14 +53,14 @@ end
 
 
 function clusterbaseline(t::relativeSpikes)
-    clusters = t._info[!, "cluster_id"]
-    tim = t._specs["back"] / 1000
-    ind = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
+    clusters::Vector{Int64} = t._info[!, "cluster_id"]
+    tim::Float64 = t._specs["back"] / 1000
+    ind::Matrix{Int64} = t._spiketimes[findall(x -> x < 0, t._spiketimes[:, 2]), :]
     clusterbaselines = Dict{Int64,Matrix{Float64}}()
-    for c in clusters
-        tmp = zeros(t._specs["ntrig"], 1)
+    for c::Int64 in clusters
+        tmp::Matrix{Float64} = zeros(t._specs["ntrig"], 1)
         data = ind[findall(x -> x == c, ind[:, 1]), :]
-        Threads.@threads for n in 1:t._specs["ntrig"]
+        Threads.@threads for n::Int64 in 1:t._specs["ntrig"]
             @inbounds tmp[n] = length(filter(t -> t == n, data[:, 3])) / tim
         end
         clusterbaselines[Int64(c)] = tmp
@@ -69,20 +69,28 @@ function clusterbaseline(t::relativeSpikes)
 end
 
 function depthbaseline(t::relativeSpikes)
-    depths = Set(t._info[!, "depth"])
-    ind = t._spiketimes[t._spiketimes[:, 2].<0, :]
-    tim = t._specs["back"] / 1000
+    depths::Set{Float64} = Set(t._info[!, "depth"]::Vector{Float64})
+    ind::Matrix{Int64} = t._spiketimes[t._spiketimes[:, 2].<0, :]
+    tim::Float64 = t._specs["back"] / 1000
     depthbaselines = Dict{Int64,Matrix{Float64}}()
-    for d in depths
+    for d::Float64 in depths
         tmp = zeros(t._specs["ntrig"], 1)
-        clusters = Set(subset(t._info, :depth => ByRow(x -> x == d))[!, "cluster_id"])
-        data = ind[findall(x -> x in clusters, ind[:, 1]), :]
+        clusters::Set{Int64} = Set{Int64}(subset(t._info, :depth => ByRow(x -> x == d))[!, "cluster_id"]::Vector{Int64})
+        data::Matrix{Int64} = ind[findall(x -> x in clusters, ind[:, 1]), :]
         Threads.@threads for n in 1:t._specs["ntrig"]
             @inbounds tmp[n] = length(filter(t -> t == n, data[:, 3])) / tim
         end
         depthbaselines[Int64(d)] = tmp
     end
     return DepthBaseline(depthbaselines)
+end
+
+function getbaseline(key::Int64, baseline::ClusterBaseline)
+    return baseline.x[key]
+end
+
+function getbaseline(key::Int64, baseline::DepthBaseline)
+    return baseline.x[key]
 end
 
 function spikesper(t::relativeSpikes, period::Int64=30)
@@ -156,6 +164,37 @@ function relresponse(t::relativeSpikes, period::Int64, baseline::ClusterBaseline
         end
     end
     return mm
+end
+
+
+function relresponse(t::relativeSpikes, period::Int64, baseline::DepthBaseline)
+    absolutes::Matrix{Int64} = spikesper(t, period)
+    period::Int64 = period * 30
+    times::Vector{Float64} = minimum(absolutes[:, 2]):period:maximum(absolutes[:, 2])
+    out::Matrix{Float64} = Matrix(undef, length(times) * length(getdepths(t)), 3)
+    hashacc::Dict{UInt64,Float64} = Dict{UInt64,Float64}()
+    depthdict::Dict{Int64,Float64} = Dict{Int64,Float64}(
+        cluster => filter(:cluster_id => x -> x == cluster, t._info)[!, "depth"][1] for cluster in getclusters(t)
+    )
+
+    n::Int64 = 0
+    for d::Float64 in getdepths(t)
+        for t in times
+            n += 1
+            hashacc[hash(d, hash(t))] = 0.0
+            out[n, 1:2] = [d t]
+        end
+    end
+    for row in 1:size(absolutes, 1)
+        hashacc[hash(depthdict[absolutes[row, 1]], hash(Float64(absolutes[row, 2])))] += absolutes[row, 4] * 30000 / period
+    end
+
+
+    for nrow in 1:size(out, 1)
+        out[nrow, 3] = hashacc[hash(out[nrow, 1], hash(out[nrow, 2]))] / (mean(baseline.x[Int64(out[nrow, 1])]) * 340)
+    end
+
+    return out
 end
 
 """
