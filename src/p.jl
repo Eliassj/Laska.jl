@@ -143,15 +143,13 @@ function plotsumstat(p::PhyOutput, x::String, y::String, z::String)
     display(fig)
 end
 
-function plotrelresponse(r, cluster)
-    fig = Figure()
-    ax = Axis(
-        fig[1, 1]
-    )
-    lines!(
-        ax,
-        r[r[:, 1].==cluster, 2] ./ 30,
-        r[r[:, 1].==cluster, 3]
-    )
-    display(fig)
+function plotrelresponse(t::relativeSpikes, period::Int64, depthdiv::Int64)
+    response = relresponse(t, period, depthbaseline(t))
+    depthinterval::Float64 = ceil(maximum(getdepths(t)) / depthdiv)
+    depths::Dict{Float64,String} = Dict{Float64,String}()
+    for i in 1:depthdiv
+        depths[i*depthinterval] = string(Int((depthinterval * i) - depthinterval)) * " - " * string(Int(depthinterval * i))
+    end
+
+    return depths
 end

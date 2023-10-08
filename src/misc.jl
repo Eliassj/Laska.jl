@@ -220,3 +220,28 @@ function indlookup(mat::Matrix{T}, keys::Vector{T}, col::Int=1) where {T<:Real}
     )
     return out
 end
+
+"""
+Round up a `value` to the nearest greater multiple of `period`.
+
+"""
+@inline function roundup(value::T, period::Int64) where {T<:Real}
+    return Int64(ceil(value / period) * period)
+end
+
+@inline function roundup(value::T, period::Float64) where {T<:Real}
+    return ceil(value / period) * period
+end
+
+
+"""
+Round down a `value` to the nearest lower multiple of `period`
+
+"""
+@inline function rounddown(value::T, period::Int64) where {T<:Real}
+    return Int64(floor(value / period) * period)
+end
+
+@inline function rounddown(value::T, period::Float64) where {T<:Real}
+    return floor(value / period) * period
+end

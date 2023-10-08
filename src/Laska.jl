@@ -21,6 +21,7 @@ using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg = LinearAlgebra
 using FFTW
+using MakieCore
 
 include("types.jl") # Type definitions
 #include("import.jl")
@@ -35,5 +36,6 @@ include("clustering.jl") # Clustering
 include("graphing.jl") # Create graph representations
 include("importknown.jl")
 include("interactive.jl")
+include("plotrecipes.jl")
 end
 
