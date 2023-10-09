@@ -211,20 +211,17 @@ function relresponse(t::relativeSpikes, period::Int64, baseline::DepthBaseline, 
     depths::Vector{Float64} = [i * depthinterval for i in 1:depthdiv]
     hashacc::Dict{UInt64,Float64} = Dict{UInt64,Float64}()
     depthdict::Dict{Int64,Float64} = Dict{Int64,Float64}(
+        cluster => roundup(filter(:cluster_id => x -> x == cluster, t._info)[!, "depth"][1], depthinterval) for cluster in getclusters(t)
+    )
+    depthdicttrue::Dict{Int64,Float64} = Dict{Int64,Float64}(
         cluster => filter(:cluster_id => x -> x == cluster, t._info)[!, "depth"][1] for cluster in getclusters(t)
     )
-    # Create mean baselines for each depth interval
-    #    adjustedbaseline::Dict{Float64,Float64} = Dict{Float64,Float64}(depth => 0.0 for depth in depths)
-    #    all::Vector{Float64} = getdepths(t)
-    #    n_depths::Dict{Float64,Int64} = Dict{Float64,Int64}()
-    #    for d in depths # Iterate over depth intervals
-    #        current::Vector{Float64} = all[(d-depthinterval).<all.<=d]
-    #        n_depths[d] = length(current)
-    #        for spec in current # Iterate over individual depths
-    #            adjustedbaseline[d] += mean(baseline.x[spec])
-    #        end
-    #        adjustedbaseline[d] /= n_depths[d]
-    #    end
+    all::Vector{Float64} = getdepths(t)
+    n_depths::Dict{Float64,Int64} = Dict{Float64,Int64}()
+    for i in 1:depthdiv
+        n_depths[i*depthinterval] = length(all[(i-1)*depthinterval.<all.<=i*depthinterval])
+    end
+
     n::Int64 = 0
     for d::Float64 in depths
         for t in times
@@ -234,7 +231,7 @@ function relresponse(t::relativeSpikes, period::Int64, baseline::DepthBaseline, 
         end
     end
     for row in 1:size(absolutes, 1)
-        hashacc[hash(depthdict[absolutes[row, 1]], hash(Float64(absolutes[row, 2])))] += absolutes[row, 4] * 30000 / (period * baseline.x[depthdict[absolutes[row, 1]]][absolutes[row, 3]])
+        hashacc[hash(depthdict[absolutes[row, 1]], hash(Float64(absolutes[row, 2])))] += absolutes[row, 4] * 30000 / (period * mean(baseline.x[depthdicttrue[absolutes[row, 1]]]) * 340 * n_depths[depthdict[absolutes[row, 1]]])
     end
 
 

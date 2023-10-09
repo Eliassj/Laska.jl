@@ -36,6 +36,6 @@ include("clustering.jl") # Clustering
 include("graphing.jl") # Create graph representations
 include("importknown.jl")
 include("interactive.jl")
-include("plotrecipes.jl")
+include("responseplot.jl")
 end
 
