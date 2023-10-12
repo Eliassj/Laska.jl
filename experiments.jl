@@ -1,4 +1,3 @@
-using Base: Forward
 #%%
 using Laska
 using TSne
@@ -38,7 +37,7 @@ s = Scene()
 p = deepcopy(res)
 Laska.mad!(p)
 Laska.cv2(p, true)
-Laska.medianisi!(p)julia recompilation
+Laska.medianisi!(p)
 
 g, vd, cd = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
 
@@ -105,7 +104,7 @@ function plotit()
 end
 
 
-stab = Laska.stability(res, mdfactor = .4, period = 10000)
+stab = Laska.stability(res, mdfactor=0.4, period=10000)
 
 for c in Laska.getclusters(res)
     println(c, ": ", stab[c])
@@ -144,3 +143,10 @@ lines!(
     relative
 )
 display(fig)
+
+
+
+matpath = "/home/elias/illerdata/Singleunits.mat"
+known=Laska.importsingleunits(matpath)
+purkinje = Laska.reshape2long(known["Purkinje"])
+golgi = Laska.reshape2long(known["Golgi"])

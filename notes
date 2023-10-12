@@ -1,0 +1,9 @@
+k-nearest neighbor graphs: Here the goal is to connect vertex vi with vertex vj if vj is among
+the k-nearest neighbors of vi. However, this definition leads to a directed graph, as the neighborhood
+relationship is not symmetric. There are two ways of making this graph undirected. The first way is
+to simply ignore the directions of the edges, that is we connect vi and vj with an undirected edge if vi
+is among the k-nearest neighbors of vj or if vj is among the k-nearest neighbors of vi. The resulting
+graph is what is usually called the k-nearest neighbor graph. The second choice is to connect vertices
+vi and vj if both vi is among the k-nearest neighbors of vj and vj is among the k-nearest neighbors of
+vi. The resulting graph is called the mutual k-nearest neighbor graph. In both cases, after connecting
+the appropriate vertices we weight the edges by the similarity of their endpoints.

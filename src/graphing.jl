@@ -27,7 +27,7 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String})
         c => v for (v, c) in pairs(vdict)
     )
     # Make/preallocate source-, destination- and weight vectors
-    edgepairs = expandgrid(collect(keys(vdict)))
+    edgepairs::Matrix{Int64} = expandgrid(collect(keys(vdict)))
     sources = edgepairs[1, :]
     destinations = edgepairs[2, :]
     weights::Vector{Float64} = Vector{Float64}(undef, length(destinations))
@@ -54,6 +54,20 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String})
     graph = SimpleWeightedGraph(sources, destinations, weights)
 
     return graph, vdict, cdict
+end
+
+function KNNclustergraph(p::PhyOutput, edgevariables::Vector, k::Int64)
+    # Create dictionary edge label => cluster
+    vdict::Dict{Int64,Int64} = Dict(
+        n => getclusters(p)[n] for n in eachindex(getclusters(p))
+    )
+    # Create dictionary cluster => edge label
+    cdict::Dict{Int64,Int64} = Dict(
+        c => v for (v, c) in pairs(vdict)
+    )
+    edgepairs::Matrix{Int64} = expandgrid(getclusters(p))
+    sources::Vector{Int64} = edgepairs[1, :]
+    destinations::Vector{Int64} = edgepairs[2, :]
 end
 
 function removesmalledges(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, cutoff::Float64)
