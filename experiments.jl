@@ -39,7 +39,7 @@ Laska.mad!(p)
 Laska.cv2(p, true)
 Laska.medianisi!(p)
 
-g, vd, cd = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
+g = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
 
 Laska.removesmalledges(g, 0.5)
 
@@ -147,6 +147,6 @@ display(fig)
 
 
 matpath = "/home/elias/illerdata/Singleunits.mat"
-known=Laska.importsingleunits(matpath)
+known = Laska.importsingleunits(matpath)
 purkinje = Laska.reshape2long(known["Purkinje"])
 golgi = Laska.reshape2long(known["Golgi"])

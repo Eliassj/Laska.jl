@@ -189,7 +189,7 @@ Will return
     1  1
 
 """
-function expandgrid(v::Vector{Int64})
+function expandgrid(v::Vector{Int64}, returnseparate::Bool=false)
     out::Matrix{Int64} = Matrix{Int64}(undef, (2, binomial(length(v), 2)))
     s = 0
     for i in eachindex(v)
@@ -199,7 +199,11 @@ function expandgrid(v::Vector{Int64})
             out[:, s] = [c1 c2]
         end
     end
-    return out
+    if returnseparate
+        return out[1, :], out[2, :]
+    else
+        return out
+    end
 end
 
 """
