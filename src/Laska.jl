@@ -22,6 +22,7 @@ using LinearAlgebra
 LinAlg = LinearAlgebra
 using FFTW
 using MakieCore
+using InvertedIndices
 
 include("types.jl") # Type definitions
 #include("import.jl")

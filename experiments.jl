@@ -4,7 +4,7 @@ using TSne
 using Statistics
 using GLMakie
 using DSP
-using CairoMakie
+using GLMakie
 using GraphMakie
 using SimpleWeightedGraphs
 using LinearAlgebra
@@ -39,9 +39,9 @@ Laska.mad!(p)
 Laska.cv2(p, true)
 Laska.medianisi!(p)
 
-g = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"])
+g, s, a = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"], 10)
 
-Laska.removesmalledges(g, 0.5)
+Laska.removesmalledges(g, 0.2)
 
 ed = collect(Laska.edges(g))
 Laska.dst(ed[1])
@@ -74,12 +74,22 @@ A = collect(Laska.normalizedlaplacian(g))
 eig = LinAlg.eigvecs(A)
 eigvals = LinAlg.eigvals(A)
 
+# Cluster with DBSCAN https://ai.stanford.edu/~ang/papers/nips01-spectral.pdf
+eigenmatr = eig[:, 1:7]
+for col in 1:7
+    eigenmatr[:, col] = Laska.normalize(eigenmatr[:, col])
+end
+
+trans = transpose(eigenmatr)
+db = Clustering.dbscan(trans, 0.2)
+
+
 Laska.maxeigvec(eig)
 
-Laska.eigencut!(g, eig, 10)
+Laska.eigencut!(g, eig, 2)
 plotit()
 scatter(eigvals)
-scatter(eig[:, 10])
+scatter(eig[:, 4][sortperm(eig[:, 4])])
 
 
 
@@ -93,11 +103,10 @@ function plotit()
     f, ax, tr = graphplot(
         g,
         nlabels=repr.(
-            [vd[v] for v in Laska.vertices(g)]
-        ),
-        edge_color=Laska.weight.(Laska.edges(g)),
-        edge_width=Laska.normalize!(Laska.weight.(Laska.edges(g)), 0.5, 4)#,
-        #layout=Spring(;dim=3)
+            s
+        ), edge_color=Laska.weight.(Laska.edges(g)),
+        edge_width=Laska.normalize!(Laska.weight.(Laska.edges(g)), 0.5, 4),
+        edge_plottype=:beziersegments,
     )
     Colorbar(f[1, 2], limits=(0, maximum(Laska.weight.(Laska.edges(g)))))
     display(f)

@@ -20,10 +20,8 @@ Weights are currently computed as 1 divided by the summed absolute difference of
 """
 function clustergraph(p::PhyOutput, edgevariables::Vector{String})
     # Make/preallocate source-, destination- and weight vectors
-    edgepairs::Matrix{Int64} = expandgrid(getclusters(p))
-    sources = edgepairs[1, :]
-    destinations = edgepairs[2, :]
-    weights::Vector{Float64} = Vector{Float64}(undef, length(destinations))
+    sources = getclusters(p)
+    adjmatrix::Matrix{Float64} = Matrix{Float64}(undef, length(sources), length(sources))
     # Copy vars from info df
     vars = deepcopy(p._info[!, append!(["cluster_id"], edgevariables)])
     # Normalize variables between 0-1
@@ -34,42 +32,81 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String})
     vardict::Dict{Int64,Vector{Float64}} = Dict(
         vars[r, "cluster_id"] => Vector{Float64}(vars[r, Not("cluster_id")]) for r in 1:length(getclusters(p))
     )
-    # Calculate weight vector
-    # Currently calculated as euclidean distance with a gaussian kernel (||x1 - x2||^2/(2*gamma^2))
-    #gamma = maximum(maximum(values(vardict))) * 0.15
-    gamma = 1
-    n = 1
-    for (s, d) in zip(sources, destinations)
-        weights[n] = exp(-sum((vardict[vdict[s]] .- vardict[vdict[d]]) .^ 2) / (2 * (gamma^2)))
-        n += 1
+    compare::Vector{Float64} = Vector{Float64}(undef, length(edgevariables))
+    gamma::Float64 = 1.0
+    for n in eachindex(sources)
+        compare = vardict[sources[n]]
+        @simd for m in eachindex(sources)
+            @inbounds adjmatrix[m, n] = gaussiankernel(compare, vardict[sources[m]], gamma)
+        end
+    end
+    # remove circular edges
+    for n in eachindex(sources)
+        adjmatrix[n, n] = 0.0
     end
     # Make graph
-    graph = SimpleWeightedGraph(sources, destinations, weights)
+    graph = SimpleWeightedGraph(adjmatrix)
 
-    return graph
+    return graph, sources, adjmatrix
 end
 
-function KNNclustergraph(p::PhyOutput, edgevariables::Vector, k::Int64)
-    sources, destinations = expandgrid(getclusters(p), true)
-    weights::Vector{Float64} = Vector{Float64}(undef, length(destinations))
+function clustergraph(p::PhyOutput, edgevariables::Vector{String}, k::Int64)
+    # Make/preallocate source-, destination- and weight vectors
+    sources = getclusters(p)
+    adjmatrix::Matrix{Float64} = Matrix{Float64}(undef, length(sources), length(sources))
     # Copy vars from info df
     vars = deepcopy(p._info[!, append!(["cluster_id"], edgevariables)])
     # Normalize variables between 0-1
     for col in edgevariables
         vars[!, col] = normalize(vars[!, col])
     end
+    # Prepare a dict cluster => normalized variables
     vardict::Dict{Int64,Vector{Float64}} = Dict(
         vars[r, "cluster_id"] => Vector{Float64}(vars[r, Not("cluster_id")]) for r in 1:length(getclusters(p))
     )
-    # Calculate weight vector
-    # Currently calculated as euclidean distance with a gaussian kernel (||x1 - x2||^2/(2*gamma^2))
-    #gamma = maximum(maximum(values(vardict))) * 0.15
-    gamma = 1
-    n = 1
-    for (s, d) in zip(sources, destinations)
-        weights[n] = exp(-sum((vardict[vdict[s]] .- vardict[vdict[d]]) .^ 2) / (2 * (gamma^2)))
-        n += 1
+    compare::Vector{Float64} = Vector{Float64}(undef, length(edgevariables))
+    gamma::Float64 = 1.0
+    for n in eachindex(sources)
+        compare = vardict[sources[n]]
+        @simd for m in eachindex(sources)
+            @inbounds adjmatrix[m, n] = gaussiankernel(compare, vardict[sources[m]], gamma)
+        end
     end
+    # remove circular edges
+    for n in eachindex(sources)
+        adjmatrix[n, n] = 0.0
+    end
+    # KNNify
+    filtervec::Vector{Bool} = Vector{Bool}(undef, length(sources))
+    filtervec .= true
+    for n in eachindex(sources)
+        sr::Vector{Int64} = partialsortperm(adjmatrix[:, n], 1:k, rev=true)
+        filtervec[sr] .= false
+        v = @view adjmatrix[:, n]
+        v[filtervec] .= 0.0
+        v = @view adjmatrix[n, :]
+        v[filtervec] .= 0.0
+        filtervec .= true
+    end
+    # Make graph
+    graph = SimpleWeightedGraph(adjmatrix)
+
+    return graph, sources, adjmatrix
+
+end
+
+
+
+function gaussiankernel(v1::Vector{Float64}, v2::Vector{Float64}, gamma::Float64)
+    return exp(-(euclideandistance(v1, v2)^2) / (2 * (gamma^2)))
+end
+
+@inline function euclideandistance(v1::Vector{Float64}, v2::Vector{Float64})
+    out = 0.0
+    for i::Int64 in eachindex(v1)
+        @inbounds out += (v1[i] - v2[i])^2
+    end
+    return sqrt(out)
 end
 
 function KNNify(
@@ -96,7 +133,7 @@ function normalizedlaplacian(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,F
     deg = degree_matrix(g)
     adj = adjacency_matrix(g)
     if type == "sym"
-        return deg^(-1 / 2) * adj * deg^(-1 / 2)
+        return (deg^(-1 / 2) * adj * deg^(-1 / 2))
     elseif type == "rw"
         return pinv(collect(deg)) * collect(adj)
     end
