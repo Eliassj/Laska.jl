@@ -22,6 +22,11 @@ ffr = :fr => x -> x > 1
     filters=(ffr,)
 )
 
+stab = Laska.stability(res, mdfactor=0.4, period=10000)
+Laska.addinfo!(res, collect(values(stab)), collect(keys(stab)), "Stability")
+stabf = :Stability => x -> x > 0.5
+Laska.filterphy!(res, (stabf,))
+
 @time tes = Laska.relativeSpikes(res, Dict("US" => 300, "CS" => 0), forward=600)
 
 
@@ -34,12 +39,11 @@ Laska.plotraster(tes, 158)
 
 s = Scene()
 
-p = deepcopy(res)
-Laska.mad!(p)
-Laska.cv2(p, true)
-Laska.medianisi!(p)
+Laska.mad!(res)
+Laska.cv2(res, true)
+Laska.medianisi!(res)
 
-g, s, a = Laska.clustergraph(p, ["mad", "cv2median", "median_isi"], 10)
+g, s, a = Laska.clustergraph(res, ["mad", "cv2median", "median_isi"], 10)
 
 Laska.removesmalledges(g, 0.2)
 
@@ -75,8 +79,8 @@ eig = LinAlg.eigvecs(A)
 eigvals = LinAlg.eigvals(A)
 
 # Cluster with DBSCAN https://ai.stanford.edu/~ang/papers/nips01-spectral.pdf
-eigenmatr = eig[:, 1:7]
-for col in 1:7
+eigenmatr = eig[:, 1:3]
+for col in 1:3
     eigenmatr[:, col] = Laska.normalize(eigenmatr[:, col])
 end
 
@@ -113,7 +117,6 @@ function plotit()
 end
 
 
-stab = Laska.stability(res, mdfactor=0.4, period=10000)
 
 for c in Laska.getclusters(res)
     println(c, ": ", stab[c])
@@ -159,3 +162,18 @@ matpath = "/home/elias/illerdata/Singleunits.mat"
 known = Laska.importsingleunits(matpath)
 purkinje = Laska.reshape2long(known["Purkinje"])
 golgi = Laska.reshape2long(known["Golgi"])
+
+
+cl = res._spiketimes[res._spiketimes[:, 1].==158, 2]
+ex = Laska.extendvec(cl)
+ex = ex .- mean(ex)
+ff = fft(ex[:, 2])
+
+conj = Vector{ComplexF64}(
+    undef,
+    length(ff)
+)
+
+conj = Base.conj.(ff)
+
+corr = ifft(ff .* conj)

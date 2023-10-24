@@ -25,9 +25,9 @@ using MakieCore
 using InvertedIndices
 
 include("types.jl") # Type definitions
+include("i.jl") # Import functions
 #include("import.jl")
 include("filter.jl") # Filter spikes
-include("i.jl") # Import functions
 include("t.jl") # Transforming functions
 include("misc.jl") # qol/helper functions
 include("e.jl") # Export functions

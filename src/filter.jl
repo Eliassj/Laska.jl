@@ -22,3 +22,9 @@ function filterinfo(df::DataFrame, f::Tuple)
         filter!(e, df)
     end
 end
+
+function filterphy!(p::PhyOutput, filters::Tuple)
+    filterinfo(p._info, filters)
+    ininfo(cluster) = cluster in p._info[!, "cluster_id"]
+    p._spiketimes = p._spiketimes[findall(ininfo, p._spiketimes[:, 1]), :]
+end

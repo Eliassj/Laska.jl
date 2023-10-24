@@ -1,14 +1,15 @@
 # IMPORTING
 
 # Initialize a PhyOutput object
-struct PhyOutput
+mutable struct PhyOutput
     _spiketimes::Matrix{Int64}
     _info::DataFrames.DataFrame
-    _meta::Dict{SubString{String},SubString{String}}
-    _binpath::String
-    _triggers::Union{Vector{Int},Nothing}
+    const _meta::Dict{SubString{String},SubString{String}}
+    const _binpath::String
+    const _triggers::Union{Vector{Int},Nothing}
+end
 
-    """      PhyOutput(
+"""      PhyOutput(
         phydir::String = "",
         glxdir::String = "",
           same::Bool = false#       
@@ -18,16 +19,7 @@ struct PhyOutput
 
     Create a PhyOutput struct containing spiketimes(_spiketimes), info(_info), spikeGLX metadata(_meta) and the path to the associated .ap.bin file(_binpath).
     """
-
-end #struct phyoutput
-
-function importphy(
-    phydir::String="",
-    glxdir::String="",
-    triggerpath::String="",
-    same::Bool=false;
-    filters=nothing
-)
+function importphy(phydir::String="", glxdir::String="", triggerpath::String="", same::Bool=false; filters=nothing)
     if Base.length(phydir) == 0
         println("Select phy/kilosort output directory")
         phydir = Gtk.open_dialog_native("Select Kilosort/Phy output Folder", action=GtkFileChooserAction.SELECT_FOLDER)
@@ -60,7 +52,7 @@ function importphy(
     end
 
     ininfo(cluster) = cluster in info[!, "cluster_id"]
-    spiketimes = spiketimes[ininfo.(spiketimes[:, 1]), :]
+    spiketimes = spiketimes[findall(ininfo, (spiketimes[:, 1])), :]
 
     glxfiles = readdir(glxdir, join=true)
     binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]

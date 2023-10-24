@@ -65,7 +65,7 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String}, k::Int64)
         vars[r, "cluster_id"] => Vector{Float64}(vars[r, Not("cluster_id")]) for r in 1:length(getclusters(p))
     )
     compare::Vector{Float64} = Vector{Float64}(undef, length(edgevariables))
-    gamma::Float64 = 1.0
+    gamma::Float64 = 0.3333333
     for n in eachindex(sources)
         compare = vardict[sources[n]]
         @simd for m in eachindex(sources)
@@ -151,7 +151,7 @@ function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, e
 end
 
 # Eigencuts with tresholds
-function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, eigvecs::Matrix{Float64}, nvec::Int; etresh::Float64)
+function eigencut!(g::SimpleWeightedGraphs.SimpleWeightedGraph{Int64,Float64}, eigvecs::Matrix{Float64}, nvec::Int, etresh::Float64)
     removededges::Vector{SimpleWeightedEdge{Int64,Float64}} = []
     for e in edges(g)
         if (eigvecs[src(e), nvec] > etresh || eigvecs[dst(e), nvec] > etresh) && eigvecs[src(e), nvec] * eigvecs[dst(e), nvec] < 0
