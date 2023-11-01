@@ -65,7 +65,7 @@ function clustergraph(p::PhyOutput, edgevariables::Vector{String}, k::Int64)
         vars[r, "cluster_id"] => Vector{Float64}(vars[r, Not("cluster_id")]) for r in 1:length(getclusters(p))
     )
     compare::Vector{Float64} = Vector{Float64}(undef, length(edgevariables))
-    gamma::Float64 = 0.3333333
+    gamma::Float64 = 0.5
     for n in eachindex(sources)
         compare = vardict[sources[n]]
         @simd for m in eachindex(sources)

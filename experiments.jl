@@ -12,14 +12,17 @@ LinAlg = LinearAlgebra
 using GraphMakie.NetworkLayout
 
 #%%
-ffr = :fr => x -> x > 1
+function filt(x::Float64)
+    return x > 1
+end
+ftup = (:fr, filt)
 #%%
 
 @time res = Laska.importphy(
     "/home/elias/illerdata",
     "/home/elias/illerdata",
     "/home/elias/illerdata/triggerchane15941h.bin",
-    filters=(ffr,)
+    ftup
 )
 
 stab = Laska.stability(res, mdfactor=0.4, period=10000)
