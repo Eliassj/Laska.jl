@@ -8,7 +8,7 @@ function getdepths(p::PhyOutput)
     return unique(p._info[!, "depth"])::Vector{Float64}
 end
 
-function getdepths(t::relativeSpikes)
+function getdepths(t::RelativeSpikes)
     return unique(t._info[!, "depth"])::Vector{Float64}
 end
 
@@ -16,7 +16,7 @@ function getclusters(p::PhyOutput)
     return deepcopy(p._info[!, "cluster_id"])::Vector{Int64}
 end
 
-function getclusters(t::relativeSpikes)
+function getclusters(t::RelativeSpikes)
     return deepcopy(t._info[!, "cluster_id"])::Vector{Int64}
 end
 
