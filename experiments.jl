@@ -11,12 +11,11 @@ using LinearAlgebra
 LinAlg = LinearAlgebra
 using GraphMakie.NetworkLayout
 
-#%%
 function filt(x::Float64)
     return x > 1
 end
 ftup = (:fr, filt)
-#%%
+
 
 @time res = Laska.importphy(
     "/home/elias/illerdata",
@@ -24,6 +23,8 @@ ftup = (:fr, filt)
     "/home/elias/illerdata/triggerchane15941h.bin",
     ftup
 )
+
+@time tes = Laska.trigify(res, Dict("CS" => 0, "US" => 300), 500, 600)
 
 stab = Laska.stability(res, mdfactor=0.4, period=10000)
 Laska.addinfo!(res, collect(values(stab)), collect(keys(stab)), "Stability")
@@ -180,3 +181,18 @@ conj = Vector{ComplexF64}(
 conj = Base.conj.(ff)
 
 corr = ifft(ff .* conj)
+
+function plottest(clust::Laska.RelativeCluster{Int64})
+    fig = Figure()
+    ax = Axis(
+        fig[1, 1]
+    )
+    for n in 1:340
+        scatter!(
+            ax,
+            clust.spiketimes[n],
+            fill(n, length(clust.spiketimes[n]))
+        )
+    end
+    display(fig)
+end

@@ -24,13 +24,22 @@ using FFTW
 using MakieCore
 using InvertedIndices
 
-include("types/types.jl") # Type definitions
+# Type definitions
+include("types/abstract.jl")
+include("types/types.jl")
 include("types/cluster.jl")
 include("types/phyoutput.jl")
+
 include("import/importmisc.jl")
 include("import/importphy.jl")
+
+include("helpers/timeconv.jl")
+
+# Work around triggers
+include("triggers/relativespikes.jl")
+
 include("filter.jl") # Filter spikes
-include("t.jl") # Transforming functions
+#include("t.jl") # Transforming functions
 include("misc.jl") # qol/helper functions
 include("e.jl") # Export functions
 include("p.jl") # Plotting/visualization
