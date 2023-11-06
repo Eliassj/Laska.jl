@@ -33,4 +33,7 @@ include("helpers/timeconv.jl")
 # Work around triggers
 include("triggers/relativespikes.jl")
 
+# Summarizing statistics
+include("summarize/cv2.jl")
+
 end

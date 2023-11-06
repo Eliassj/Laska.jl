@@ -106,10 +106,6 @@ end
 
 
 
-function hej()
-    println("Hej")
-
-end
 
 # Extract triggers from Vector
 
@@ -174,6 +170,8 @@ function getchan(
         it = tuple.(n, t)
         #it = collect(enumerate(len))
 
+
+end
 
         if length(ch) > 1
             Laska.importchx!(ch, r, karta, it)

@@ -22,6 +22,9 @@ Returns the id of `cluster`
     return cluster.id
 end
 
+function nspikes(cluster::T) where {T<:AbstractCluster}
+    return length(cluster.spiketimes)
+end
 
 """
 
