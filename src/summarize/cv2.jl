@@ -13,7 +13,7 @@ Returns CV2 values of `cluster` as a vector.
 CV2 is calculated according to:
 
 ```math
-CV2 = 2|ISI_{n+1} - ISI_n| / (ISI_{n+1} + ISI_n)
+CV2 = \\frac{2|ISI_{n+1} - ISI_n|}{(ISI_{n+1} + ISI_n)}
 ```
 
 """

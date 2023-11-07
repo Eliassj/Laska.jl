@@ -28,12 +28,15 @@ include("types/phyoutput.jl")
 include("import/importmisc.jl")
 include("import/importphy.jl")
 
+# Helper functions
 include("helpers/timeconv.jl")
+include("helpers/rounding.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")
 
 # Summarizing statistics
 include("summarize/cv2.jl")
+include("summarize/frequency.jl")
 
 end
