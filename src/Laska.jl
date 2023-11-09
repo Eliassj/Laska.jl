@@ -31,6 +31,7 @@ include("import/importphy.jl")
 # Helper functions
 include("helpers/timeconv.jl")
 include("helpers/rounding.jl")
+include("helpers/spikesatdepth.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")

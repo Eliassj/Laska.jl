@@ -1,0 +1,50 @@
+###############################################
+#
+# Get a vector of all spikes at a certain depth
+#
+###############################################
+
+"""
+
+    spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real}
+    spikesatdepth(p::PhyOutput{T}, depth::Tuple{2,N}) where {T<:Real} where {N<:Real}
+    spikesatdepth(p::PhyOutput{T}, depth::Set{N}) where {T<:Real} where {N<:Real}
+
+Returns a `Vector{T}` of all spiketimes at/in `depth`.
+
+The included depths are controlled by the type of the `depth` variable:                 
+
+- A **single number** returns only the spikes of clusters at that exact depth.                  
+- A **Tuple** with 2 entries returns all clusters at depths between (and including) `depth[1]` & `depth[2]`.                  
+- A **Set** returns the clusters with the exact depths in the Set.
+"""
+function spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real}
+    out::Vector{T} = T[]
+    for cluster in clustervector(p)
+        if parse(N, info(cluster, "depth")) == depth
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end
+
+function spikesatdepth(p::PhyOutput{T}, depth::Tuple{2,N}) where {T<:Real} where {N<:Real}
+    out::Vector{T} = T[]
+    for cluster in clustervector(p)
+        if depth[1] <= parse(N, info(cluster, "depth")) <= depth[2]
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end
+
+
+function spikesatdepth(p::PhyOutput{T}, depth::Set{N}) where {T<:Real} where {N<:Real}
+    out::Vector{T} = T[]
+    for cluster in clustervector(p)
+        if parse(N, info(cluster, "depth")) in depth
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end

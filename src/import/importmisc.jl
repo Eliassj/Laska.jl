@@ -1,6 +1,6 @@
 
 
-# Extract triggers from Vector
+# Extract triggers from Vector of triggerchannel
 
 function gettrig(t::Vector)
     r::Vector = findall(!iszero, t)
