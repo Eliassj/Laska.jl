@@ -28,7 +28,7 @@ function spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real
     return out
 end
 
-function spikesatdepth(p::PhyOutput{T}, depth::Tuple{2,N}) where {T<:Real} where {N<:Real}
+function spikesatdepth(p::PhyOutput{T}, depth::NTuple{2,N}) where {T<:Real} where {N<:Real}
     out::Vector{T} = T[]
     for cluster in clustervector(p)
         if depth[1] <= parse(N, info(cluster, "depth")) <= depth[2]

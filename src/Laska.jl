@@ -6,7 +6,6 @@ using DataFrames
 const dt = DataFrames
 using MAT
 using NPZ
-using GLMakie
 using CSV
 using Mmap
 const mp = Mmap
@@ -16,8 +15,8 @@ using Graphs
 using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg = LinearAlgebra
-using MakieCore
 using InvertedIndices
+using GLMakie
 
 # Type definitions
 include("types/abstract.jl")
@@ -32,6 +31,8 @@ include("import/importphy.jl")
 include("helpers/timeconv.jl")
 include("helpers/rounding.jl")
 include("helpers/spikesatdepth.jl")
+include("helpers/normalize.jl")
+include("helpers/unembedvector.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")
@@ -39,5 +40,9 @@ include("triggers/relativespikes.jl")
 # Summarizing statistics
 include("summarize/cv2.jl")
 include("summarize/frequency.jl")
+
+# Visualization
+include("visualize/frequencyplot.jl")
+include("visualize/recipes/frequencyrecipe.jl")
 
 end
