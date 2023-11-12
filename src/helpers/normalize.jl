@@ -8,29 +8,29 @@ Returns a min-max normalized version of `vec`. Defaults to 0-1 but custom ranges
 
 See [`normalize!`](@ref) for an in-place version
 """
-function normalize(vec::Vector{<:Real}, min::T, max::T) where {T<:Real}
-    x::Vector{Float64} = deepcopy(vec)
-    minx = minimum(x)
-    diffx = maximum(x) - minx
-    rangediff = max - min
-
-    for v in eachindex(x)
-        x[v] = min + ((x[v] - minx) * rangediff) / diffx
-    end
-    return x
-end
-
 function normalize(vec::Vector{<:Real})
-    x::Vector{Float64} = deepcopy(vec)
-    minx = minimum(x)
-    diffx = maximum(x) - minx
-    for v in eachindex(x)
-        x[v] = ((x[v] - minx)) / diffx
-    end
-    return x
+    out::Vector{Float64} = deepcopy(vec)
+    normalize!(out)
+    return out
 end
 
+function normalize(vec::Vector{<:Real}, min::T, max::T) where {T<:Real}
+    out::Vector{Float64} = deepcopy(vec)
+    normalize!(out, min, max)
+    return out
+end
 
+function normalize(vec::Vector{<:Real}, min::T, max::T, minmax::NTuple{2,T}) where {T<:Real}
+    out::Vector{Float64} = deepcopy(vec)
+    normalize!(out, min, max, minmax)
+    return out
+end
+
+function normalize(vec::Vector{<:Real}, minmax::NTuple{2,T}) where {T<:Real}
+    out::Vector{Float64} = deepcopy(vec)
+    normalize!(out, minmax)
+    return out
+end
 
 """
     normalize!(vec::Vector{<:AbstractFloat}, min::Real, max::Real)
@@ -55,4 +55,23 @@ function normalize!(vec::Vector{<:AbstractFloat}, min::T, max::T) where {T<:Real
         vec[v] = min + ((vec[v] - minx) * rangediff) / diffx
     end
 end
+
+function normalize!(vec::Vector{<:AbstractFloat}, min::T, max::T, minmax::NTuple{2,T}) where {T<:Real}
+    minx = minmax[1]
+    diffx = minmax[2] - minmax[1]
+    rangediff = max - min
+    for v in eachindex(vec)
+        vec[v] = min + ((vec[v] - minx) * rangediff) / diffx
+    end
+end
+
+function normalize!(vec::Vector{<:AbstractFloat}, minmax::NTuple{2,T}) where {T<:Real}
+    diffx = minmax[2] - minmax[1]
+    for v in eachindex(vec)
+        vec[v] = ((vec[v] - minmax[1])) / diffx
+    end
+end
+
+
+
 

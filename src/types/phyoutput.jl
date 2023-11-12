@@ -53,3 +53,12 @@ end
 end
 
 # RelativeSpikes- 
+
+function relativespecs(rel::RelativeSpikes{T}) where T<:Real
+    return rel.specs
+end
+
+
+function relativespecs(rel::RelativeSpikes{T}, spec::String) where T<:Real
+    return rel.specs[spec]
+end

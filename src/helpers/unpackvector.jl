@@ -5,10 +5,18 @@
 #
 ##########################################################################################
 
-function unembedvector(vec::Vector{Vector{T}}) where {T}
-    out::Vector{Int64} = Vector{Int64}(undef, 0)
+function unpackvector(vec::Vector{Vector{T}}) where {T}
+    outlen::Int64 = 0
     for v in vec
-        out = vcat(out, v)
+        outlen += length(v)
+    end
+    out::Vector{Int64} = Vector{Int64}(undef, outlen)
+
+    pos::Int = 1
+    for v in vec
+        veclen = length(v)
+        out[pos:veclen + pos - 1] = v
+        pos += veclen
     end
     return out
 end

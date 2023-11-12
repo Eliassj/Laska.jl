@@ -48,3 +48,36 @@ function spikesatdepth(p::PhyOutput{T}, depth::Set{N}) where {T<:Real} where {N<
     end
     return out
 end
+
+# Versions for relativespikes
+
+function spikesatdepth(p::RelativeSpikes{T}, depth::N) where {T<:Real} where {N<:Real}
+    out::Vector{Vector{T}} = Vector{Vector{T}}(undef, 0)
+    for cluster in clustervector(p)
+        if parse(N, info(cluster, "depth")) == depth
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end
+
+function spikesatdepth(p::RelativeSpikes{T}, depth::NTuple{2,N}) where {T<:Real} where {N<:Real}
+    out::Vector{Vector{T}} = Vector{Vector{T}}(undef, 0)
+    for cluster in clustervector(p)
+        if depth[1] <= parse(N, info(cluster, "depth")) < depth[2]
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end
+
+
+function spikesatdepth(p::RelativeSpikes{T}, depth::Set{N}) where {T<:Real} where {N<:Real}
+    out::Vector{Vector{T}} = Vector{Vector{T}}(undef, 0)
+    for cluster in clustervector(p)
+        if parse(N, info(cluster, "depth")) in depth
+            out = vcat(out, spiketimes(cluster))
+        end
+    end
+    return out
+end

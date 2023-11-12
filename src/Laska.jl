@@ -11,6 +11,7 @@ using Mmap
 const mp = Mmap
 using DSP
 using StatsBase
+using Statistics
 using Graphs
 using SimpleWeightedGraphs
 using LinearAlgebra
@@ -32,7 +33,7 @@ include("helpers/timeconv.jl")
 include("helpers/rounding.jl")
 include("helpers/spikesatdepth.jl")
 include("helpers/normalize.jl")
-include("helpers/unembedvector.jl")
+include("helpers/unpackvector.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")

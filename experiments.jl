@@ -22,9 +22,9 @@ ftup = (:fr, filt)
     "/home/elias/illerdata",
     "/home/elias/illerdata/triggerchane15941h.bin",
     ftup
-)
+);
 
-@time tes = Laska.relativespikes(res, Dict("CS" => 0, "US" => 300), 500, 600)
+@time tes = Laska.relativespikes(res, Dict("CS" => 0, "US" => 300), 500, 600);
 
 stab = Laska.stability(res, mdfactor=0.4, period=10000)
 Laska.addinfo!(res, collect(values(stab)), collect(keys(stab)), "Stability")

@@ -4,6 +4,6 @@
 #
 ##############################################################
 
-function mstosamplerate(experiment::PhyOutput{T}, ms::T) where {T<:Real}
-    return ms * parse(T, experiment.meta["imSampRate"]) / 1000
+function mstosamplerate(experiment::T, ms::Int64) where {T<:AbstractExperiment}
+    return ms * parse(Float64, experiment.meta["imSampRate"]) / 1000
 end
