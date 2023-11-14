@@ -17,7 +17,7 @@ using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg = LinearAlgebra
 using InvertedIndices
-using GLMakie
+using MakieCore
 
 # Type definitions
 include("types/abstract.jl")
@@ -34,6 +34,8 @@ include("helpers/rounding.jl")
 include("helpers/spikesatdepth.jl")
 include("helpers/normalize.jl")
 include("helpers/unpackvector.jl")
+include("helpers/isntempty.jl")
+include("helpers/findmax.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")
@@ -41,6 +43,7 @@ include("triggers/relativespikes.jl")
 # Summarizing statistics
 include("summarize/cv2.jl")
 include("summarize/frequency.jl")
+include("summarize/relativefrequency.jl")
 
 # Visualization
 include("visualize/frequencyplot.jl")

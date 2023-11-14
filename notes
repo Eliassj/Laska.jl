@@ -7,3 +7,34 @@ graph is what is usually called the k-nearest neighbor graph. The second choice 
 vi and vj if both vi is among the k-nearest neighbors of vj and vj is among the k-nearest neighbors of
 vi. The resulting graph is called the mutual k-nearest neighbor graph. In both cases, after connecting
 the appropriate vertices we weight the edges by the similarity of their endpoints.
+
+
+
+
+    #    alldepths::Vector{Float64} = parse.(Float64, info.(clustervector(exp), "depth"))
+
+    #    maxdepth::Float64 = maximum(alldepths)
+    #    depthinterval = maxdepth / depths
+
+    #    actualdepths::Vector{Int64} = Int64[]
+
+    # Determine what depths to include
+    #    for d in depths:-1:1
+    #        if length(alldepths[(d-1)*depthinterval.<=alldepths.<d*depthinterval]) != 0
+    #            push!(actualdepths, d)
+    #        end
+    #    end
+
+
+    # FIX: Make this not return normalized values.
+
+    #    nbacktime = mstosamplerate(exp, relativespecs(exp, "back")) / period
+
+    #    backbins::Int64 = floor(nbacktime)
+
+    #    lins = Vector{Vector{Float64}}(undef, 0)
+    #    for i in actualdepths
+    #        times::Vector{Float64} = frequency(unpackvector(spikesatdepth(exp, ((i - 1) * depthinterval, i * depthinterval))), period)
+    #        normalize!(times, (0.0, mean(times[1:backbins])))
+    #        push!(lins, times[2:end])
+    #    end

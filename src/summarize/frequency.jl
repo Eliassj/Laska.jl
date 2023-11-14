@@ -40,40 +40,45 @@ function frequency(cluster::RelativeCluster{N}, period::T) where {T<:Real,N<:Rea
 end
 
 # frequency of relative spikes by depth
-function frequency(exp::RelativeSpikes{T}, depths::Int64, period::T) where {T<:Real}
-    alldepths::Vector{Float64} = parse.(Float64, info.(clustervector(exp), "depth"))
+# FIX: Create a new function `relativefrequency` and change this to return the absolute
+# frequency at each depth. `relativefrequency` should return the relative frequency of each
+# individual trigger like the old one did.
 
-    maxdepth::Float64 = maximum(alldepths)
-    depthinterval = maxdepth / depths
+function frequency(vec::Vector{Vector{T}}, period::T) where {T<:Real}
 
-    actualdepths::Vector{Int64} = Int64[]
-
-    # Determine what depths to include
-    for d in depths:-1:1
-        if length(alldepths[(d-1)*depthinterval.<=alldepths.<d*depthinterval]) != 0
-            push!(actualdepths, d)
+    out::Vector{Vector{T}} = Vector{Vector{T}}(undef, length(vec))
+    len = roundup(minval(vec), period):period:roundup(maxval(vec), period)
+    for n in eachindex(out)
+        if iszero(length(vec[n]))
+            out[n] = zeros(T, length(len))
+            continue
         end
+        out[n] = frequency(vec[n], period, len)
     end
 
-
-    nbacktime = mstosamplerate(exp, relativespecs(exp, "back")) / period
-
-    backbins::Int64 = floor(nbacktime)
-
-    lins = Vector{Vector{Float64}}(undef, 0)
-    for i in actualdepths
-        times::Vector{Float64} = frequency(unpackvector(spikesatdepth(exp, ((i - 1) * depthinterval, i * depthinterval))), period)
-        normalize!(times, (0.0, mean(times[1:backbins])))
-        push!(lins, times[2:end])
-    end
-    return lins
+    return out
 end
 
 
 function frequency(times::Vector{T}, period::T) where {T<:Real}
 
     # NOTE: Should the binning be different? Use Laska.arbitraryround instead?
-    accumulator::Dict{T,Int64} = Dict{T,Int64}(t => 0 for t in roundup(minimum(times), period):period:roundup(maximum(times), period))
+    accumulator::Dict{T,Int64} = Dict{T,Int64}(t => 0 for t in roundup(minimum(times; init=0), period):period:roundup(maximum(times; init=0), period))
+
+    @inbounds for n in eachindex(times)
+        accumulator[roundup(times[n], period)] += 1
+    end
+
+    sorter = sortperm(collect(keys(accumulator)))
+
+    return collect(values(accumulator))[sorter]
+end
+
+
+function frequency(times::Vector{T}, period::T, steps::StepRange{T,T}) where {T<:Real}
+
+    # NOTE: Should the binning be different? Use Laska.arbitraryround instead?
+    accumulator::Dict{T,Int64} = Dict{T,Int64}(t => 0 for t in steps)
 
     @inbounds for n in eachindex(times)
         accumulator[roundup(times[n], period)] += 1

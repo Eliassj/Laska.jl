@@ -1,19 +1,19 @@
 
-@recipe(FrequencyByDepthPlot, experiment, depths, period) do scene
+MakieCore.@recipe(FrequencyByDepthPlot, experiment, depths, period) do scene
     Attributes(
         color=standardcol
     )
 end
 
 
-function GLMakie.plot!(plt::FrequencyByDepthPlot)
+function MakieCore.plot!(plt::FrequencyByDepthPlot)
     p = plt.experiment
 
     depths = plt.depths
 
     period = plt.period
 
-    lins = Observable(Vector{Vector{Float64}}(undef, 0))
+    lins = MakieCore.Observable(Vector{Vector{Float64}}(undef, 0))
 
     function update_plot(p, depths, period)
         empty!(lins[])
@@ -21,9 +21,9 @@ function GLMakie.plot!(plt::FrequencyByDepthPlot)
         for i in eachindex(tims)
             push!(lins[], tims[i])
         end
-        # FIX: Determine proper adjustment so lines don't clip each other
+        maxresp = maximum(maximum(lins[])) + abs(minimum(minimum(lins[])))
         for i in length(lins[]):-1:1
-            lins[][i] .+= (i - 1)
+            lins[][i] .+= (((i - 1) * maxresp) - 1)
         end
 
 
