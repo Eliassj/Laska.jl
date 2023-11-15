@@ -28,7 +28,7 @@ Laska.frequency(cluster::Laska.Cluster, interval::T) where {T<:Real}
 ## ISI
 
 ````@docs
-Laska.isi(cluster::Cluster{T}) where {T<:Real}
+Laska.isi(cluster::Laska.Cluster{T}) where {T<:Real}
 ````
 
 
