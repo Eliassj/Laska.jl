@@ -16,7 +16,6 @@ using Graphs
 using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg = LinearAlgebra
-using InvertedIndices
 using MakieCore
 
 # Type definitions
