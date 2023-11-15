@@ -44,7 +44,7 @@ end
 # frequency at each depth. `relativefrequency` should return the relative frequency of each
 # individual trigger like the old one did.
 
-function frequency(vec::Vector{Vector{T}}, period::T) where {T<:Real}
+function frequency(vec::Vector{Vector{T}}, period::T, removefirst::Bool=false) where {T<:Real}
 
     out::Vector{Vector{T}} = Vector{Vector{T}}(undef, length(vec))
     len = roundup(minval(vec), period):period:roundup(maxval(vec), period)
@@ -55,8 +55,15 @@ function frequency(vec::Vector{Vector{T}}, period::T) where {T<:Real}
         end
         out[n] = frequency(vec[n], period, len)
     end
+    if removefirst
+        for i in eachindex(out)
+            out[i] = out[i][2:end]
+        end
+        return out
+    else
+        return out
+    end
 
-    return out
 end
 
 

@@ -4,7 +4,7 @@
 #
 ###########################################################
 
-mutable struct PhyOutput{T<:Real} <: AbstractExperiment
+mutable struct PhyOutput{T} <: AbstractExperiment{T}
     cellids::Vector{Int64}
     clusters::Vector{Cluster{T}}
     trigtimes::Vector{T}
@@ -12,7 +12,7 @@ mutable struct PhyOutput{T<:Real} <: AbstractExperiment
 
 end
 
-struct RelativeSpikes{T<:Real} <: AbstractExperiment
+struct RelativeSpikes{T} <: AbstractExperiment{T}
     cellids::Vector{Int64}
     clusters::Vector{RelativeCluster{T}}
     trigtimes::Vector{T}
@@ -54,11 +54,11 @@ end
 
 # RelativeSpikes- 
 
-function relativespecs(rel::RelativeSpikes{T}) where T<:Real
+function relativespecs(rel::RelativeSpikes{T}) where {T<:Real}
     return rel.specs
 end
 
 
-function relativespecs(rel::RelativeSpikes{T}, spec::String) where T<:Real
+function relativespecs(rel::RelativeSpikes{T}, spec::String) where {T<:Real}
     return rel.specs[spec]
 end

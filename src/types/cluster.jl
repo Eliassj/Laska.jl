@@ -5,7 +5,7 @@
 #
 ####################################################
 
-struct Cluster{T<:Real} <: AbstractCluster
+struct Cluster{T} <: AbstractCluster{T}
     id::Int64
     info::Dict{String,String}
     spiketimes::Vector{T}
@@ -59,7 +59,7 @@ Similar to `Cluster{T}` except that the field `spiketimes` is a `Vector{Vector{T
 
 
 """
-struct RelativeCluster{T<:Real} <: AbstractCluster
+struct RelativeCluster{T} <: AbstractCluster{T}
     id::Int64
     info::Dict{String,String}
     spiketimes::Vector{Vector{T}}

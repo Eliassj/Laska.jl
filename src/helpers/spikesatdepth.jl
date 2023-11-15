@@ -15,7 +15,8 @@ Returns a `Vector{T}` of all spiketimes at/in `depth`.
 The included depths are controlled by the type of the `depth` variable:                 
 
 - A **single number** returns only the spikes of clusters at that exact depth.                  
-- A **Tuple** with 2 entries returns all clusters at depths between (and including) `depth[1]` & `depth[2]`.                  
+- A **Tuple** with 2 entries returns all clusters at depths between (and including) the values.                  
+relativefrequency(vec::Vector{Vector{T}}, period::N) where {T<:Real,N<:Real}
 - A **Set** returns the clusters with the exact depths in the Set.
 """
 function spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real}

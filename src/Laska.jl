@@ -36,6 +36,7 @@ include("helpers/normalize.jl")
 include("helpers/unpackvector.jl")
 include("helpers/isntempty.jl")
 include("helpers/findmax.jl")
+include("helpers/isi.jl")
 
 # Work around triggers
 include("triggers/relativespikes.jl")

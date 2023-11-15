@@ -4,8 +4,17 @@
 #
 ################################
 
+"""
+Calculate relative frequency of a `RelativeCluster`/collection of spikes from a `RelativeSpikes` struct.
+
+    relativefrequency(vec::Vector{Vector{T}}, period::N) where {T<:Real,N<:Real}
+
+A baseline is calculated for each trigger session. It is based on the mean number of 
+spikes/period in bins before time=0.
+
+"""
 function relativefrequency(vec::Vector{Vector{T}}, period::N) where {T<:Real,N<:Real}
-    absolutes::Vector{Vector{Float64}} = frequency(vec, period)
+    absolutes::Vector{Vector{Float64}} = frequency(vec, period, true)
     abslen = length(absolutes)
     # Determine number of bins before 0
     nbinspre::Int64 = floor(abs(minval(vec)) / period)
