@@ -4,4 +4,6 @@
 
 ### Frequency by depth
 
-
+```@docs
+frequencybydepthplot
+```
