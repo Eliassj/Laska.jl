@@ -7,14 +7,13 @@
 # NOTE: Importfunktioner typ klara.
 """
 
-
-    function importphy(phydir::String, glxdir::String, triggerpath::String; triggers=true)
+    importphy(phydir::String, glxdir::String, triggerpath::String; triggers::Bool=true, includemua::Bool=false)
 
 Import output from phy. Spiketimes are sorted.
 
-Only "good" clusters as per phy output are included.            
+By default, only "good" clusters as per phy output are included. Setting `includemua=true` will include "mua" clusters as well as unclassified.            
 Clusters may be further filtered based on any variable in "cluster_info.tsv". This is done by including a Tuple
-with the column to be filtered as a symbol and a filtering function. Several filters may be included by wrapping them in an outer Tuple.         
+with the column to be filtered as a symbol and a filtering function. Several Tuples containing such filters may be included by wrapping them in a Tuple.         
 
 
 
@@ -31,11 +30,11 @@ end
 # applied (:fr).
 filtertuple = (:fr, filterfunc)
 
-result = importphy("some/directory", "also/a/directory", "a/path/to/triggerfile", filtertuple)
+result = importphy("phyoutput_directory", "glxoutput_directory", "direct_path_to_triggerfile", filtertuple)
 ```
 
 """
-function importphy(phydir::String, glxdir::String, triggerpath::String; triggers=true)
+function importphy(phydir::String, glxdir::String, triggerpath::String; triggers::Bool=true, includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -58,8 +57,10 @@ function importphy(phydir::String, glxdir::String, triggerpath::String; triggers
         time::Int64 = pop!(times)
         push!(resdict[cluster], time)
     end
-    isgood(group) = group == "good"
-    info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    if !includemua
+        isgood(group) = group == "good"
+        info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    end
     idvec = info[!, "cluster_id"]
 
     for id in idvec
@@ -98,7 +99,7 @@ end
 
 
 # Version with filters
-function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Symbol,Function}; triggers=true)
+function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Symbol,Function}; triggers::Bool=true, includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -122,8 +123,10 @@ function importphy(phydir::String, glxdir::String, triggerpath::String, filters:
 
     end
 
-    isgood(group) = group == "good"
-    info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    if !includemua
+        isgood(group) = group == "good"
+        info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    end
     filter!(filters[1] => filters[2], info)
     idvec = info[!, "cluster_id"]
 
@@ -163,7 +166,7 @@ end
 
 
 # Import with several filters in the form of a vector
-function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Tuple{Symbol,Function}}; triggers=true)
+function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Tuple{Symbol,Function}}; triggers::Bool=true, includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -187,8 +190,10 @@ function importphy(phydir::String, glxdir::String, triggerpath::String, filters:
 
     end
 
-    isgood(group) = group == "good"
-    info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    if !includemua
+        isgood(group) = group == "good"
+        info = subset(info, :group => ByRow(isgood), skipmissing=true)
+    end
 
     for f in filters
         filter!(f[1] => f[2], info)
