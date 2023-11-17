@@ -26,7 +26,7 @@ function filterfunc(x::Float64)
     return x > 1
 end
 
-# A tuple with the above function (filt) and the column to which it should be
+# A tuple with the above function (filterfunc) and the column to which it should be
 # applied (:fr).
 filtertuple = (:fr, filterfunc)
 

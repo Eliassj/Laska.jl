@@ -1,4 +1,37 @@
+"""
 
+    frequencybydepthplot(experiment::RelativeSpikes, depths, period)
+    frequencybydepthplot!(ax, experiment::RelativeSpikes, depths, period)
+
+Makie plot recipe for relative frequency by depth.           
+
+Requires an `experiment::RelativeSpikes`, number of `depths` and `period` for length of bins when calculating frequency.
+
+## Attributes
+
+### Plot-specific Attributes
+
+- `customx` A vector of custom x values. Should be of the same length as the number of frequency bins.
+
+### General 'lines' attributes
+
+- `color`
+- `linestyle`
+- `linewidth`
+- `colormap`
+- `colorscale`
+- `colorrange`
+- `nan_color`
+- `lowclip`
+- `highclip`
+- `alpha`
+- `visible`
+- `overdraw`
+- `fxaa`
+- `inspectable`
+- `depth_shift`
+- `space`
+"""
 MakieCore.@recipe(FrequencyByDepthPlot, experiment, depths, period) do scene
     MakieCore.Attributes(
         customx=nothing,

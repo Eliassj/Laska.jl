@@ -7,7 +7,8 @@ makedocs(
         "Home" => "index.md",
         "Reference" => [
             "Importing data" => "ref/import.md",
-            "Summarizing" => "ref/summarize.md"
+            "Summarizing" => "ref/summarize.md",
+            "Visualize" => "ref/visualize.md"
         ]
     ]
 )
