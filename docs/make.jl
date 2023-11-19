@@ -5,6 +5,7 @@ makedocs(
     sitename="Laska Documentation",
     pages=[
         "Home" => "index.md",
+        "Guide" => ["guide/importing.md"],
         "Reference" => [
             "Importing data" => "ref/import.md",
             "Summarizing" => "ref/summarize.md",

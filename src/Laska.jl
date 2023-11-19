@@ -16,6 +16,7 @@ using Graphs
 using SimpleWeightedGraphs
 using LinearAlgebra
 LinAlg = LinearAlgebra
+using Makie
 using MakieCore
 
 # Type definitions
@@ -42,6 +43,7 @@ include("triggers/relativespikes.jl")
 
 # Summarizing statistics
 include("summarize/cv2.jl")
+include("summarize/mad.jl")
 include("summarize/frequency.jl")
 include("summarize/relativefrequency.jl")
 

@@ -6,22 +6,9 @@ using Laska
 
 ## Summarizing statistics
 
-### Calculating CV2
-
-```@docs
-Laska.cv2(cluster::Laska.Cluster)
-```
-
-```@docs
-Laska.cv2mean(cluster::Laska.Cluster)
-```
-
 ### Calculating frequency
 
 
-```@docs
-Laska.frequency(cluster::Laska.Cluster, interval::T) where {T<:Real}
-```
 
 # Helpers
 

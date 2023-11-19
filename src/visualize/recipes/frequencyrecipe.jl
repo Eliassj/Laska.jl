@@ -34,6 +34,7 @@ Requires an `experiment::RelativeSpikes`, number of `depths` and `period` for le
 """
 MakieCore.@recipe(FrequencyByDepthPlot, experiment, depths, period) do scene
     MakieCore.Attributes(
+        stimlines=true,
         customx=nothing,
         color=nothing,
         linestyle=:solid,
@@ -85,7 +86,7 @@ function MakieCore.plot!(plt::FrequencyByDepthPlot)
                 Laska.relativefrequency(Laska.spikesatdepth(p[], dpth), period[])
             )
         end
-        maxresp = maxval(lins[]) + abs(minval(lins[]))
+        maxresp = maximum(maximum(lins[])) + abs(minimum(minimum(lins[])))
         for i in length(lins[]):-1:1
             lins[][i] .+= (((i - 1) * maxresp) - 1)
         end
@@ -101,6 +102,15 @@ function MakieCore.plot!(plt::FrequencyByDepthPlot)
     if isnothing(plt[:customx][])
         plt[:customx][] = sampleratetoms(collect(roundup(minval(spikesatdepth(p[], (0.0, maxdepth))), period[]):period[]:roundup(maxval(spikesatdepth(p[], (0.0, maxdepth))), period[]))[2:end], parse(Float64, getmeta(p[], "imSampRate")))
     end
+
+    if plt[:stimlines][]
+        stimT = collect(values(stimtimes(p[])))
+        Makie.vlines!(
+            plt,
+            stimT,
+        )
+    end
+
 
     for i in eachindex(lins[])
         MakieCore.lines!(

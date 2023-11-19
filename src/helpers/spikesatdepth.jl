@@ -6,9 +6,9 @@
 
 """
 
-    spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real}
-    spikesatdepth(p::PhyOutput{T}, depth::Tuple{2,N}) where {T<:Real} where {N<:Real}
-    spikesatdepth(p::PhyOutput{T}, depth::Set{N}) where {T<:Real} where {N<:Real}
+    spikesatdepth(experiment::E{T}, depth::N) where {E<:AbstractExperiment,T<:Real,N<:Real}
+    spikesatdepth(experiment::E{T}, depth::Tuple{2,N}) where {E<:AbstractExperiment,T<:Real,N<:Real}
+    spikesatdepth(experiment::E{T}, depth::Set{N}) where {E<:AbstractExperiment,T<:Real,N<:Real}
 
 Returns a `Vector{T}` of all spiketimes at/in `depth`.
 
@@ -16,7 +16,6 @@ The included depths are controlled by the type of the `depth` variable:
 
 - A **single number** returns only the spikes of clusters at that exact depth.                  
 - A **Tuple** with 2 entries returns all clusters at depths between (and including) the values.                  
-relativefrequency(vec::Vector{Vector{T}}, period::N) where {T<:Real,N<:Real}
 - A **Set** returns the clusters with the exact depths in the Set.
 """
 function spikesatdepth(p::PhyOutput{T}, depth::N) where {T<:Real} where {N<:Real}

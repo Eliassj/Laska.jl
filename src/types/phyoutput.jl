@@ -22,38 +22,86 @@ struct RelativeSpikes{T} <: AbstractExperiment{T}
 end
 
 
-@inline function getcell(experiment::T, cell::Int64) where {T<:AbstractExperiment}
-    return experiment.clusters[findfirst(x -> x == cell, experiment.cellids)]
+"""
+
+    function getcluster(experiment::T, cluster::Int64) where {T<:AbstractExperiment}
+
+Returns a `cluster` from `experiment`.
+
+"""
+function getcluster(experiment::T, cluster::Int64) where {T<:AbstractExperiment}
+    return experiment.clusters[findfirst(x -> x == cluster, experiment.cellids)]
 end
 
-@inline function ntrigs(experiment::T) where {T<:AbstractExperiment}
+
+"""
+
+function ntrigs(experiment::T) where {T<:AbstractExperiment}
+
+Returns the number of trigger events in `experiment`.
+"""
+function ntrigs(experiment::T) where {T<:AbstractExperiment}
     return length(experiment.trigtimes)
 end
 
-@inline function whichcells(experiment::T) where {T<:AbstractExperiment}
+"""
+
+    function clusterids(experiment::T) where {T<:AbstractExperiment}
+
+Returns a Vector of all cluster id:s present in experiment.
+
+"""
+function clusterids(experiment::T) where {T<:AbstractExperiment}
     return experiment.cellids
 end
 
+"""
 
-@inline function triggertimes(experiment::T) where {T<:AbstractExperiment}
+    triggertimes(experiment::T) where {T<:AbstractExperiment}
+
+Returns the timestamps of trigger events in `experiment`.
+
+"""
+function triggertimes(experiment::T) where {T<:AbstractExperiment}
     return experiment.trigtimes
 end
 
+"""
 
-@inline function clustervector(experiment::T) where {T<:AbstractExperiment}
+clustervector(experiment::T) where {T<:AbstractExperiment}
+
+Returns a `Vector{T}` where T<:AbstractCluster containing all clusters in `experiment`.
+
+"""
+function clustervector(experiment::T) where {T<:AbstractExperiment}
     return experiment.clusters
 end
 
-@inline function getmeta(experiment::T, entry::String) where {T<:AbstractExperiment}
+
+"""
+getmeta(experiment::T, entry::String) where {T<:AbstractExperiment}
+getmeta(experiment::T) where {T<:AbstractExperiment}
+
+Returns experiment meta info from spikeGLX. If an `entry` string is not supplied all entries are returned.
+
+"""
+function getmeta(experiment::T, entry::String) where {T<:AbstractExperiment}
     return experiment.meta[entry]
 end
 
-@inline function getmeta(experiment::T) where {T<:AbstractExperiment}
+function getmeta(experiment::T) where {T<:AbstractExperiment}
     return experiment.meta
 end
 
 # RelativeSpikes- 
+"""
+    relativespecs(rel::RelativeSpikes{T}) 
+    relativespecs(rel::RelativeSpikes{T}, spec::String) where {T<:Real}
 
+
+Returns a Dict containing the 'specs' of a `RelativeSpikes` struct.                         
+Includes the `back` and `forward` variables used as well as the number of trigger events (`ntrigs`).
+"""
 function relativespecs(rel::RelativeSpikes{T}) where {T<:Real}
     return rel.specs
 end
@@ -61,4 +109,14 @@ end
 
 function relativespecs(rel::RelativeSpikes{T}, spec::String) where {T<:Real}
     return rel.specs[spec]
+end
+
+"""
+
+    stimtimes(experiment::RelativeSpikes)
+
+Returns a dict containing the stimtrain of a `RelativeSpikes` struct in the form of `label => time`.
+"""
+function stimtimes(experiment::RelativeSpikes)
+    return experiment.stimtrain
 end
