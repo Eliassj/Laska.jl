@@ -8,7 +8,7 @@
     spikemmap(file::String, meta::Dict{Substring{String}, SubString{String}})
 
 Create a memory map of a spikeGLX .bin file. Requires a path to the `file`, the number of channels and the file size in bytes.              
-The easiest way to provide this is to pass a parsed .meta file in which the entries "nSavedChans" and "fileSizeBytes" describe number of channels and file size.
+The easiest way to provide this is to pass a parsed .meta file.
 
 """
 function spikemmap(file::String, nchans::Int, filesizebytes::Int)
@@ -26,7 +26,7 @@ end
 
 
 """
-    tovolts(in::T{Int16}, meta::Dict{SubString{String},SubString{String}})
+    tovolts(in::Matrix{Int16}, meta::Dict{SubString{String},SubString{String}})
 
 Convert a Vector/Matrix of raw spikeGLX `Int16` data to volts.
 

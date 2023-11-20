@@ -8,6 +8,8 @@ Laska.importphy
 
 ## SpikeGLX
 
+Functions for importing and parsing spikeGLX binary and meta files.
+
 ```@docs
 Laska.spikemmap
 Laska.parseglxmeta
