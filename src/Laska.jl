@@ -25,8 +25,8 @@ include("types/types.jl")
 include("types/cluster.jl")
 include("types/phyoutput.jl")
 
-include("import/importmisc.jl")
 include("import/importphy.jl")
+include("import/readglx.jl")
 
 # Helper functions
 include("helpers/timeconv.jl")

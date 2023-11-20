@@ -39,7 +39,7 @@ function cv2mean(cluster::Cluster)
     out::Float64 = 0
     nspik = nspikes(cluster) - 2
     spikes = spiketimes(cluster)
-    @simd for n in 1:length(spikes)-2
+    @views @simd for n in 1:length(spikes)-2
         isi1 = spikes[n+1] - spikes[n]
         isi2 = spikes[n+2] - spikes[n+1]
         out += @inline calculatecv2(isi1, isi2)

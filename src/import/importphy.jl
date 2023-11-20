@@ -73,7 +73,13 @@ function importphy(phydir::String, glxdir::String="", triggerpath::String=""; in
     end
 
     if triggerpath != ""
-        t = importchanint16(triggerpath)
+        if triggerpath[end-3:end] == ".bin"
+            t = importchanint16bin(triggerpath)
+        elseif triggerpath[end-3:end] == ".csv"
+            t = importchanint16csv(triggerpath)
+        else
+            error("Triggerfile (triggerpath) must end in '.csv' or 'bin'!")
+        end
         triggers = gettrig(t)
     else
         triggers = Vector{Int64}(undef, 0)

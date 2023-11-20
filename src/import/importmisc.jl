@@ -2,12 +2,6 @@
 
 # Extract triggers from Vector of triggerchannel
 
-function gettrig(t::Vector)
-    r::Vector = findall(!iszero, t)
-    p::Matrix{Int64} = hcat(getindex.(r, 1), getindex.(r - circshift(r, 1), 1))
-    s::Vector{Int64} = p[p[:, 2].!=1, 1]
-    return s
-end
 
 # TODO Add methods for channel spec types?
 function getchan(
@@ -99,8 +93,8 @@ function importch1!(channels::Union{Int,Vector{Int},UnitRange{Int64}}, a::Vector
 end
 
 function spikemmap(p::PhyOutput)
-    n::Int = parse(Int, p._meta["nSavedChans"])
-    s::Int = Int(parse(Int, p._meta["fileSizeBytes"]) / (2 * n))
+    n::Int = parse(Int, getmeta(p, "nSavedChans"))
+    s::Int = Int(parse(Int, getmeta(p, "fileSizeBytes")) / (2 * n))
     tmp::IOStream = open(p._binpath, "r")
     m::Array{Int16,2} = mp.mmap(tmp, Array{Int16,2}, (n, s), 0)
     close(tmp)
