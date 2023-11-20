@@ -19,9 +19,9 @@ ftup = (:fr, filt)
 
 @time res = Laska.importphy(
     "/home/elias/illerdata",
+    ftup,
     "/home/elias/illerdata",
-    "/home/elias/illerdata/triggerchane15941h.bin",
-    ftup
+    "/home/elias/illerdata/triggerchane15941h.bin"
 );
 
 @time tes = Laska.relativespikes(res, Dict("CS" => 0, "US" => 300), 500, 600);

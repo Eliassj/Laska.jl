@@ -7,9 +7,11 @@
 # NOTE: Importfunktioner typ klara.
 """
 
-    importphy(phydir::String, glxdir::String, triggerpath::String; triggers::Bool=true, includemua::Bool=false)
+    importphy(phydir::String, glxdir::String, triggerpath::String; includemua::Bool=false)
+    importphy(phydir::String, filters::Tuple{Symbol,Function}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
+    importphy(phydir::String, filters::Tuple{Tuple{Symbol,Function}}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
 
-Import output from phy. Spiketimes are sorted.
+Import Kilosort output processed in Phy. Spiketimes are sorted.
 
 By default, only "good" clusters as per phy output are included. Setting `includemua=true` will include "mua" clusters as well as unclassified.            
 Clusters may be further filtered based on any variable in "cluster_info.tsv". This is done by including a Tuple
@@ -34,7 +36,7 @@ result = importphy("phyoutput_directory", "glxoutput_directory", "direct_path_to
 ```
 
 """
-function importphy(phydir::String, glxdir::String, triggerpath::String; triggers::Bool=true, includemua::Bool=false)
+function importphy(phydir::String, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -43,7 +45,6 @@ function importphy(phydir::String, glxdir::String, triggerpath::String; triggers
         clusters = convert(Vector{Int64}, NPZ.npzread(phydir * "/spike_clusters.npy"))
         times = convert(Vector{Int64}, NPZ.npzread(phydir * "/spike_times.npy")[:, 1])
         info = CSV.read(phydir * "/cluster_info.tsv", DataFrame)
-
     end
 
     idvec::Vector{Int64} = info[!, "cluster_id"]
@@ -71,35 +72,39 @@ function importphy(phydir::String, glxdir::String, triggerpath::String; triggers
         push!(clustervec, Cluster(id, inf, sort!(resdict[id])))
     end
 
-    if triggers
+    if triggerpath != ""
         t = importchanint16(triggerpath)
         triggers = gettrig(t)
     else
         triggers = Vector{Int64}(undef, 0)
     end
 
-    glxfiles = readdir(glxdir, join=true)
-    binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
-    if length(binlist) > 0
-        binfile::String = binlist[1]
-    else
-        binfile = ""
-    end
-    metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
+    if glxdir != ""
+        glxfiles = readdir(glxdir, join=true)
+        binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
+        if length(binlist) > 0
+            binfile::String = binlist[1]
+        else
+            binfile = ""
+        end
+        metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
 
-    # Read metadata
-    tmp = open(metafile, "r")
-    metaraw = readlines(tmp)
-    close(tmp)
-    metaraw = split.(metaraw, "=")
-    metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
+        # Read metadata
+        tmp = open(metafile, "r")
+        metaraw = readlines(tmp)
+        close(tmp)
+        metaraw = split.(metaraw, "=")
+        metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
+    else
+        metadict = Dict{SubString{String},SubString{String}}()
+    end
 
     return PhyOutput(idvec, clustervec, triggers, metadict)
 end
 
 
 # Version with filters
-function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Symbol,Function}; triggers::Bool=true, includemua::Bool=false)
+function importphy(phydir::String, filters::Tuple{Symbol,Function}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -138,35 +143,38 @@ function importphy(phydir::String, glxdir::String, triggerpath::String, filters:
         push!(clustervec, Cluster(id, inf, sort!(resdict[id])))
     end
 
-    if triggers
+    if triggerpath != ""
         t = importchanint16(triggerpath)
         triggers = gettrig(t)
     else
         triggers = Vector{Int64}(undef, 0)
     end
 
-    glxfiles = readdir(glxdir, join=true)
-    binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
-    if length(binlist) > 0
-        binfile::String = binlist[1]
+    if glxdir != ""
+        glxfiles = readdir(glxdir, join=true)
+        binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
+        if length(binlist) > 0
+            binfile::String = binlist[1]
+        else
+            binfile = ""
+        end
+        metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
+
+        # Read metadata
+        tmp = open(metafile, "r")
+        metaraw = readlines(tmp)
+        close(tmp)
+        metaraw = split.(metaraw, "=")
+        metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
     else
-        binfile = ""
+        metadict = Dict{SubString{String},SubString{String}}()
     end
-    metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
-
-    # Read metadata
-    tmp = open(metafile, "r")
-    metaraw = readlines(tmp)
-    close(tmp)
-    metaraw = split.(metaraw, "=")
-    metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
-
     return PhyOutput(idvec, clustervec, triggers, metadict)
 end
 
 
 # Import with several filters in the form of a vector
-function importphy(phydir::String, glxdir::String, triggerpath::String, filters::Tuple{Tuple{Symbol,Function}}; triggers::Bool=true, includemua::Bool=false)
+function importphy(phydir::String, filters::Tuple{Tuple{Symbol,Function}}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
     if Sys.iswindows()
         clusters::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_clusters.npy"))
         times::Vector{Int64} = convert(Vector{Int64}, NPZ.npzread(phydir * "\\spike_times.npy")[:, 1])
@@ -208,29 +216,32 @@ function importphy(phydir::String, glxdir::String, triggerpath::String, filters:
         push!(clustervec, Cluster(id, inf, sort!(resdict[id])))
     end
 
-    if triggers
+    if triggerpath != ""
         t = importchanint16(triggerpath)
         triggers = gettrig(t)
     else
         triggers = Vector{Int64}(undef, 0)
     end
 
-    glxfiles = readdir(glxdir, join=true)
-    binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
-    if length(binlist) > 0
-        binfile::String = binlist[1]
+    if glxdir != ""
+        glxfiles = readdir(glxdir, join=true)
+        binlist = [f for f in glxfiles if f[Base.length(f)-6:Base.length(f)] == ".ap.bin"]
+        if length(binlist) > 0
+            binfile::String = binlist[1]
+        else
+            binfile = ""
+        end
+        metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
+
+        # Read metadata
+        tmp = open(metafile, "r")
+        metaraw = readlines(tmp)
+        close(tmp)
+        metaraw = split.(metaraw, "=")
+        metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
     else
-        binfile = ""
+        metadict = Dict{SubString{String},SubString{String}}()
     end
-    metafile::String = [f for f in glxfiles if f[Base.length(f)-7:Base.length(f)] == ".ap.meta"][1]
-
-    # Read metadata
-    tmp = open(metafile, "r")
-    metaraw = readlines(tmp)
-    close(tmp)
-    metaraw = split.(metaraw, "=")
-    metadict = Dict{SubString{String},SubString{String}}(i[1] => i[2] for i in metaraw)
-
     return PhyOutput(idvec, clustervec, triggers, metadict)
 end
 

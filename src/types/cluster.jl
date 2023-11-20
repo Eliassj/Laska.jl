@@ -5,6 +5,25 @@
 #
 ####################################################
 
+"""
+
+    struct Cluster{T} <: AbstractCluster{T}
+        id::Int64
+        info::Dict{String,String}
+        spiketimes::Vector{T}
+    end
+
+Struct for holding a single Cluster.
+
+Direct field access is **not** recommended. Basic interface functions include:
+
+- [`Laska.id`](@ref) -- Returns the Cluster id.
+- [`Laska.nspikes`](@ref) -- Returns the number of spikes in the cluster (Based off length of the `spiketimes` field).
+- [`Laska.info`](@ref) -- Returns the info of the `Cluster` from "cluster_info.tsv" as a Dict.
+- Laska.spiketimes -- Returns a Vector containing all spiketimes of the `Cluster`.
+
+
+"""
 struct Cluster{T} <: AbstractCluster{T}
     id::Int64
     info::Dict{String,String}
@@ -22,6 +41,13 @@ Returns the id of `cluster`
     return cluster.id
 end
 
+"""
+
+nspikes(cluster::T) where {T<:AbstractCluster}
+
+Returns the number of spikes (length of the `spiketimes` field) of `Cluster`.
+
+"""
 function nspikes(cluster::T) where {T<:AbstractCluster}
     return length(cluster.spiketimes)
 end

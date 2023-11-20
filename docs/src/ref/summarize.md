@@ -5,7 +5,7 @@
 ### MAD
 
 ```@docs
-mad
+Laska.mad
 ```
 
 ### CV2
