@@ -5,7 +5,7 @@
 ### AbstractExperiment
 
 ```@docs
-Laska.AbstractExperiment
+Laska.AbstractExperiment{T}
 ```
 
 #### Interfaces
@@ -39,7 +39,7 @@ Laska.ntrigs
 ### AbstractCluster
 
 ```@docs
-Laska.AbstractCluster
+Laska.AbstractCluster{T}
 ```
 
 #### Interfaces
