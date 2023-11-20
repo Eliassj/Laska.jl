@@ -10,7 +10,7 @@ Laska.AbstractExperiment{T}
 
 #### Interfaces
 
-The following functions provide interfaces to all structs that are children of `AbstractExperiment`.
+The following functions provide interfaces to all structs that are children of [`Laska.AbstractExperiment`](@ref).
 
 ```@docs
 Laska.clusterids
@@ -44,7 +44,7 @@ Laska.AbstractCluster{T}
 
 #### Interfaces
 
-The following functions provide interfaces to all structs that are children of [`AbstractCluster`](@ref).
+The following functions provide interfaces to all structs that are children of [`Laska.AbstractCluster`](@ref).
 
 ```@docs
 Laska.id
