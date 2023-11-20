@@ -18,7 +18,7 @@ Laska.cv2(cluster::Laska.Cluster)
 Laska.cv2mean(cluster::Laska.Cluster)
 ```
 
-### Frequency
+## Frequency
 
 ```@docs
 Laska.frequency(cluster::Laska.Cluster, period::T) where {T<:Real}

@@ -3,22 +3,20 @@
 Importing Phy output data is done using [`Laska.importphy`](@ref). This will return a
 [`Laska.PhyOutput`](@ref) struct.
 
-## Methods
+#### Basic usage
 
-###### "Basic"
-
-The method below will import all clusters found in `phydir`. By default, only "good" clusters as found in "cluster_info.tsv" will be included. Setting `includemua` to `false` will include all clusters.
+The method below will import all clusters found in `phydir`. By default, only "good" clusters as found in "cluster\_info.tsv" will be included. Setting `includemua` to `false` will include all clusters.
 
 ```julia
 importphy(phydir::String, glxdir::String, triggerpath::String; includemua::Bool=false)
 ```
 
-###### Methods with filters
+#### Filtering clusters
 
-These methods include `filters` which may be used to exclude clusters based on variables
-found in "cluster_info.tsv".\
+These methods below accept `filters` which may be used to exclude clusters based on variables
+found in "cluster\_info.tsv".\
 `filters` are a Tuple with 2 entries:\
-A `Symbol` matching a column in "cluster_info.tsv".\
+A `Symbol` matching a column in "cluster\_info.tsv".\
 A `Function` returning `true`/`false` applicable to the specified column.
 
 Several `filters` may be included by wrapping them in a Tuple.
