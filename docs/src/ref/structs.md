@@ -1,6 +1,6 @@
 # Structs and their interfaces
 
-```@contents
+```@index
 ```
 
 ## Abstract types
