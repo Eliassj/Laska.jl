@@ -20,7 +20,7 @@ Direct field access is **not** recommended. Basic interface functions include:
 - [`Laska.id`](@ref) -- Returns the Cluster id.
 - [`Laska.nspikes`](@ref) -- Returns the number of spikes in the cluster (Based off length of the `spiketimes` field).
 - [`Laska.info`](@ref) -- Returns the info of the `Cluster` from "cluster_info.tsv" as a Dict.
-- Laska.spiketimes -- Returns a Vector containing all spiketimes of the `Cluster`.
+- [`Laska.spiketimes`](@ref) -- Returns a Vector containing all spiketimes of the `Cluster`.
 
 
 """
@@ -33,7 +33,7 @@ end
 
 """
 
-    id(cluster::Cluster)
+    function id(cluster::T) where {T<:AbstractCluster}
 
 Returns the id of `cluster`
 """
@@ -43,7 +43,7 @@ end
 
 """
 
-nspikes(cluster::T) where {T<:AbstractCluster}
+    nspikes(cluster::T) where {T<:AbstractCluster}
 
 Returns the number of spikes (length of the `spiketimes` field) of `Cluster`.
 
@@ -54,7 +54,7 @@ end
 
 """
 
-    info(cluster::Cluster)
+    info(cluster::T) where {T<:AbstractCluster}
 
 Returns info (as dict) about `cluster`. A string may be supplied to return a specific entry (as Float64).
 """
@@ -69,7 +69,7 @@ end
 
 """
     
-    spiketimes(cluster::Cluster)
+    spiketimes(cluster::Cluster::T) where {T<:AbstractCluster}
 
 Returns the spiketimes of `cluster`.
 
@@ -80,9 +80,22 @@ end
 
 
 """
+    struct RelativeCluster{T} <: AbstractCluster{T}
+        id::Int64
+        info::Dict{String,String}
+        spiketimes::Vector{Vector{T}}
+    end
+
+
 Struct for holding a cluster and its spiketimes relative to triggers.       
 Similar to `Cluster{T}` except that the field `spiketimes` is a `Vector{Vector{T}}` where each vector represents trigger #n.
 
+Direct field access is **not** recommended. Basic interface functions include:
+
+- [`Laska.id`](@ref) -- Returns the Cluster id.
+- [`Laska.nspikes`](@ref) -- Returns the number of spikes in the cluster (Based off length of the `spiketimes` field).
+- [`Laska.info`](@ref) -- Returns the info of the `Cluster` from "cluster_info.tsv" as a Dict.
+- [`Laska.spiketimes`](@ref) -- Returns a Vector containing all spiketimes of the `Cluster`.
 
 """
 struct RelativeCluster{T} <: AbstractCluster{T}
