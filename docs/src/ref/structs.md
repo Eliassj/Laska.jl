@@ -1,4 +1,7 @@
-# Types and their interfaces
+# Structs and their interfaces
+
+```@contents
+```
 
 ## Abstract types
 
@@ -8,7 +11,7 @@
 Laska.AbstractExperiment{T}
 ```
 
-#### Interfaces
+##### Interfaces
 
 The following functions provide interfaces to all structs that are children of [`Laska.AbstractExperiment`](@ref).
 
@@ -42,33 +45,44 @@ Laska.ntrigs
 Laska.AbstractCluster{T}
 ```
 
-#### Interfaces
+##### Interfaces
 
 The following functions provide interfaces to all structs that are children of [`Laska.AbstractCluster`](@ref).
 
 ```@docs
 Laska.id
-```
-
-```@docs
 Laska.nspikes
-```
-
-```@docs
 Laska.info
-```
-
-```@docs
 Laska.spiketimes
 ```
 ## Concrete types
 
 ### "Experiment" wrappers
 
+This section descrives concrete types for holding entire experiments including their clusters and metadata.
+
 #### PhyOutput
 
 ```@docs
 Laska.PhyOutput
+```
+
+#### RelativeSpikes
+
+```@docs
+Laska.RelativeSpikes
+```
+
+##### Interfaces
+
+Interfaces only for use with [`Laska.RelativeSpikes`](@ref).
+
+```@docs
+Laska.relativespecs
+```
+
+```@docs
+Laska.stimtimes
 ```
 
 ### Single cluster wrappers
@@ -77,4 +91,10 @@ Laska.PhyOutput
 
 ```@docs
 Laska.Cluster
+```
+
+#### RelativeCluster
+
+```@docs
+Laska.RelativeCluster
 ```
