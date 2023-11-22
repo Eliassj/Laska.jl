@@ -1,20 +1,15 @@
 # Helpers
 
-This section describes general helper functions that does not fit under other, more specific
-headings.
+This section describes general helper functions that does not fit under other, more specific headings.
 
+```@contents
+```
 
 ```@setup laska
 using Laska
 ```
 
 # Helpers
-
-## ISI
-
-````@docs
-Laska.isi
-````
 
 ## Rounding
 
@@ -59,3 +54,13 @@ Laska.arbitraryround(12.5, 1)
 Laska.arbitraryround(17, 3.8)
 ```
 
+## Unit conversions
+
+Functions for converting between different units.
+
+### Time
+
+```docs
+Laska.mstosamplerate
+Laska.sampleratetoms
+```
