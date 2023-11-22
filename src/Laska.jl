@@ -1,7 +1,8 @@
 module Laska
-# teständring
+
 const standardcol = "#4C2C69"::String
 
+using LaskaCore
 using DataFrames
 const dt = DataFrames
 using MAT
@@ -19,14 +20,6 @@ LinAlg = LinearAlgebra
 using Makie
 using MakieCore
 
-# Type definitions
-include("types/abstract.jl")
-include("types/types.jl")
-include("types/cluster.jl")
-include("types/phyoutput.jl")
-
-include("import/importphy.jl")
-include("import/readglx.jl")
 
 # Helper functions
 include("helpers/timeconv.jl")
