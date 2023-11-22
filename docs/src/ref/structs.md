@@ -1,6 +1,7 @@
-# Structs and their interfaces
+# Structs and their Interfaces
 
 ```@index
+Pages = ["structs.md"]
 ```
 
 ## Abstract types
