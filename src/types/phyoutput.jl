@@ -31,7 +31,26 @@ mutable struct PhyOutput{T} <: AbstractExperiment{T}
     meta::Dict{SubString{String},SubString{String}}
 end
 
-struct RelativeSpikes{T} <: AbstractExperiment{T}
+
+"""
+    mutable struct RelativeSpikes{T} <: AbstractExperiment{T}
+        clusterids::Vector{Int64}
+        clusters::Vector{RelativeCluster{T}}
+        trigtimes::Vector{T}
+        meta::Dict{SubString{String},SubString{String}}
+        stimtrain::Dict{String,T}
+        specs::Dict{String,T}
+    end
+
+Similar to [`Laska.PhyOutput`](@ref). However, instead of [`Laska.Cluster`](@ref)s, [`Laska.RelativeCluster`](@ref)s are used.
+In these, spiketimes relative to trigger event(s) instead of absolute spiketimes are used.              
+Additionally contains the fields:
+
+- `stimtrain::Dict{String,T}` -- Dict in the format `name/id` => `time`. `time` should be relative to trigger event. Specified by the user on creation of struct using [`Laska.relativespikes`](@ref).
+- `specs::Dict{String,T}` -- Dict containing the time before/after (`back`/`forward`) trigger events that spikes are included; as well as number of trigger events (`ntrig`).
+
+"""
+mutable struct RelativeSpikes{T} <: AbstractExperiment{T}
     clusterids::Vector{Int64}
     clusters::Vector{RelativeCluster{T}}
     trigtimes::Vector{T}
@@ -112,7 +131,7 @@ function getmeta(experiment::T) where {T<:AbstractExperiment}
     return experiment.meta
 end
 
-# RelativeSpikes- 
+# RelativeSpikes-specific functions
 """
     relativespecs(rel::RelativeSpikes{T}) 
     relativespecs(rel::RelativeSpikes{T}, spec::String) where {T<:Real}
