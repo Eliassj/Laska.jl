@@ -10,6 +10,7 @@ makedocs(
             "Structs & their interfaces" => "ref/structs.md",
             "Importing data" => "ref/import.md",
             "Filter data" => "ref/filters.md",
+            "Trigger events" => "ref/triggers.md",
             "Summarizing" => "ref/summarize.md",
             "Visualize" => "ref/visualize.md",
             "Helpers" => "ref/helpers.md"
