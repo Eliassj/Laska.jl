@@ -18,6 +18,12 @@ Laska.cv2(cluster::Laska.Cluster)
 Laska.cv2mean(cluster::Laska.Cluster)
 ```
 
+### ISI
+
+````@docs
+Laska.isi
+````
+
 ## Frequency
 
 ```@docs
