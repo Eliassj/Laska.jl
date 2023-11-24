@@ -1,7 +1,7 @@
 module Laska
 
-import LaskaCore
-import LaskaPlot
+using LaskaCore
+using LaskaPlot
 
 end
 
