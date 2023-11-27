@@ -19,7 +19,7 @@ jobs:
         with:
           version: '1.9'
       - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate(); Pkg.add(Documenter); Pkg.add(url="https://github.com/Laska-jl/LaskaCore.jl.git"); Pkg.add(url="https://github.com/Laska-jl/LaskaStats.jl.git"); Pkg.add("https://github.com/Laska-jl/LaskaPlot.jl.git")'
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate(); Pkg.add(Documenter); Pkg.add(url="https://github.com/Laska-jl/LaskaCore.jl.git"); Pkg.add(url="https://github.com/Laska-jl/LaskaStats.jl.git"); Pkg.add(url="https://github.com/Laska-jl/LaskaPlot.jl.git")'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If authenticating with GitHub Actions token
