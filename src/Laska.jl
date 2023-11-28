@@ -1,8 +1,9 @@
 module Laska
+using Reexport
 
-using LaskaCore
-using LaskaStats
-using LaskaPlot
+@reexport using LaskaCore
+@reexport using LaskaStats
+@reexport using LaskaPlot
 
 end
 
