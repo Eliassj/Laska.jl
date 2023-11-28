@@ -1,5 +1,8 @@
 Pkg.registry.add(RegistrySpec(url="https://github.com/Laska-jl/LaskaRegistry.git"))
 
+Pkg.add("LaskaCore")
+Pkg.add("LaskaStats")
+Pkg.add("LaskaPlot")
 Pkg.add("Laska")
 
 using Documenter, Laska
