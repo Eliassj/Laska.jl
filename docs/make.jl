@@ -1,4 +1,4 @@
-#Pkg.registry.add(RegistrySpec(url="https://github.com/Laska-jl/LaskaRegistry.git"))
+#Pkg.Registry.add(RegistrySpec(url="https://github.com/Laska-jl/LaskaRegistry.git"))
 
 #Pkg.add("LaskaCore")
 #Pkg.add("LaskaStats")
