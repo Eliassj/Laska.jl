@@ -1,5 +1,7 @@
 Pkg.registry.add(RegistrySpec(url="https://github.com/Laska-jl/LaskaRegistry.git"))
 
+Pkg.add("Laska")
+
 using Documenter, Laska
 
 
