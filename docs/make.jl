@@ -1,4 +1,3 @@
-] registry add "https://github.com/Laska-jl/LaskaRegistry.git"
 
 using Documenter, Laska
 
