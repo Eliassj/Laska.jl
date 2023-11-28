@@ -22,5 +22,5 @@ makedocs(
 )
 
 deploydocs(
-    repo="github.com/Eliassj/Laska.jl.git"
+    repo="github.com/Laska-jl/Laska.jl.git"
 )
