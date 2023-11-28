@@ -11,6 +11,7 @@ LaskaStats = "de767ba9-e829-4e7c-bf82-062dc00bf36c"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 
 [compat]
+Revise = "3"
 julia = "1"
 
 [extras]
