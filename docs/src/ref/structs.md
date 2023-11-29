@@ -6,41 +6,41 @@
 ### AbstractExperiment
 
 ```@docs
-LaskaCore.AbstractExperiment{T}
+AbstractExperiment{T}
 ```
 
 ##### Interfaces
 
-The following functions provide interfaces to all structs that are children of [`LaskaCore.AbstractExperiment`](@ref).
+The following functions provide interfaces to all structs that are children of [`AbstractExperiment`](@ref).
 
 ```@docs
-LaskaCore.clusterids
+clusterids
 ```
 
 ```@docs
-LaskaCore.getcluster
+getcluster
 ```
 
 ```@docs
-LaskaCore.clustervector
+clustervector
 ```
 
 ```@docs
-LaskaCore.getmeta
+getmeta
 ```
 
 ```@docs
-LaskaCore.triggertimes
+triggertimes
 ```
 
 ```@docs
-LaskaCore.ntrigs
+ntrigs
 ```
 
 ### AbstractCluster
 
 ```@docs
-LaskaCore.AbstractCluster{T}
+AbstractCluster{T}
 ```
 
 ##### Interfaces
@@ -48,10 +48,9 @@ LaskaCore.AbstractCluster{T}
 The following functions provide interfaces to all structs that are children of [`Laska.AbstractCluster`](@ref).
 
 ```@docs
-LaskaCore.id
-LaskaCore.nspikes
-LaskaCore.info
-LaskaCore.spiketimes
+nspikes
+info
+spiketimes
 ```
 ## Concrete types
 
@@ -62,21 +61,21 @@ This section describes concrete types for holding entire experiments including t
 #### PhyOutput
 
 ```@docs
-LaskaCore.PhyOutput
+PhyOutput
 ```
 
 #### RelativeSpikes
 
 ```@docs
-LaskaCore.RelativeSpikes
+RelativeSpikes
 ```
 
 ##### Interfaces
 
-Interfaces only for use with [`LaskaCore.RelativeSpikes`](@ref).
+Interfaces only for use with [`RelativeSpikes`](@ref).
 
 ```@docs
-LaskaCore.relativespecs
+relativespecs
 ```
 
 ```@docs
