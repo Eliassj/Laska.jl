@@ -2,8 +2,6 @@
 
 This section describes general helper functions that does not fit under other, more specific headings.
 
-```@contents
-```
 
 ```@setup laska
 using Laska

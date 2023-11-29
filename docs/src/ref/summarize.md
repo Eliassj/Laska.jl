@@ -11,11 +11,11 @@ LaskaStats.mad
 ### CV2
 
 ```@docs
-LaskaStats.cv2(cluster::Laska.Cluster)
+LaskaStats.cv2(cluster::LaskaCore.Cluster)
 ```
 
 ```@docs
-LaskaStats.cv2mean(cluster::Laska.Cluster)
+LaskaStats.cv2mean(cluster::LaskaCore.Cluster)
 ```
 
 ### ISI
@@ -27,7 +27,7 @@ LaskaStats.isi
 ## Frequency
 
 ```@docs
-LaskaStats.frequency(cluster::Laska.Cluster, period::T) where {T<:Real}
+LaskaStats.frequency(cluster::LaskaCore.Cluster, period::T) where {T<:Real}
 ```
 
 

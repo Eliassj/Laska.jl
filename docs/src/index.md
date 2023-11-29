@@ -12,5 +12,3 @@ The package is currently divided into:
 - **LaskaPlot:** Plotting functions using Makie.
 
 Importing `Laska` will include all of the above and reexport their functions.
-```@contents
-```
