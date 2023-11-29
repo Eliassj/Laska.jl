@@ -2,8 +2,7 @@ using Pkg
 
 Pkg.add("Documenter")
 
-using Documenter, LaskaCore, LaskaStats, LaskaPlot
-
+using Documenter, Laska
 
 
 makedocs(
