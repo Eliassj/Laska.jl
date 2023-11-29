@@ -16,42 +16,42 @@ using Laska
 Functions for "rounding" numbers to arbitrary intervals.
 
 ```@docs
-Laska.roundup
+LaskaCore.roundup
 ```
 
 ###### Examples
 
 ```@repl laska
-Laska.roundup(12, 30)
-Laska.roundup(12, 23)
-Laska.roundup(12.5, 1)
-Laska.roundup(17, 3.8)
+LaskaCore.roundup(12, 30)
+LaskaCore.roundup(12, 23)
+LaskaCore.roundup(12.5, 1)
+LaskaCore.roundup(17, 3.8)
 ```
 
 ```@docs
-Laska.rounddown
+LaskaCore.rounddown
 ```
 
 ###### Examples
 
 ```@repl laska
-Laska.rounddown(12, 30)
-Laska.rounddown(12, 23)
-Laska.rounddown(12.5, 1)
-Laska.rounddown(17, 3.8)
+LaskaCore.rounddown(12, 30)
+LaskaCore.rounddown(12, 23)
+LaskaCore.rounddown(12.5, 1)
+LaskaCore.rounddown(17, 3.8)
 ```
 
 ```@docs
-Laska.arbitraryround
+LaskaCore.arbitraryround
 ```
 
 ###### Examples
 
 ```@repl laska
-Laska.arbitraryround(12, 30)
-Laska.arbitraryround(12, 23)
-Laska.arbitraryround(12.5, 1)
-Laska.arbitraryround(17, 3.8)
+LaskaCore.arbitraryround(12, 30)
+LaskaCore.arbitraryround(12, 23)
+LaskaCore.arbitraryround(12.5, 1)
+LaskaCore.arbitraryround(17, 3.8)
 ```
 
 ## Unit conversions
@@ -61,6 +61,6 @@ Functions for converting between different units.
 ### Time
 
 ```docs
-Laska.mstosamplerate
-Laska.sampleratetoms
+LaskaCore.mstosamplerate
+LaskaCore.sampleratetoms
 ```

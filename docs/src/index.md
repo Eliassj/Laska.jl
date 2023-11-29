@@ -8,8 +8,9 @@ data obtained from Neuropixel probes using spikeGLX and preprocessed in KiloSort
 The package is currently divided into:
 
 - **LaskaCore**: Types, importing data, basic summary statistics
+- **LaskaStats:** Summary statistics and similar.
 - **LaskaPlot:** Plotting functions using Makie.
 
-Importing `Laska` will include all of the above.
+Importing `Laska` will include all of the above and reexport their functions.
 ```@contents
 ```

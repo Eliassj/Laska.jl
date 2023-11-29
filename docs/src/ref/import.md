@@ -3,7 +3,7 @@
 ## Phy output data
 
 ```@docs
-Laska.importphy
+importphy
 ```
 
 ## SpikeGLX
@@ -11,18 +11,18 @@ Laska.importphy
 Functions for importing and parsing spikeGLX binary and meta files.
 
 ```@docs
-Laska.spikemmap
-Laska.parseglxmeta
+spikemmap
+parseglxmeta
 ```
 ```@docs
-Laska.tovolts
-```
-
-```@docs
-Laska.importchanint16bin
-Laska.importchanint16csv
+tovolts
 ```
 
 ```@docs
-Laska.gettrig
+LaskaCore.importchanint16bin
+LaskaCore.importchanint16csv
+```
+
+```@docs
+LaskaCore.gettrig
 ```

@@ -1,5 +1,5 @@
 # Trigger events
 
 ```@docs
-Laska.relativespikes
+LaskaCore.relativespikes
 ```

@@ -9,41 +9,41 @@ Pages = ["structs.md"]
 ### AbstractExperiment
 
 ```@docs
-Laska.AbstractExperiment{T}
+LaskaCore.AbstractExperiment{T}
 ```
 
 ##### Interfaces
 
-The following functions provide interfaces to all structs that are children of [`Laska.AbstractExperiment`](@ref).
+The following functions provide interfaces to all structs that are children of [`AbstractExperiment`](@ref).
 
 ```@docs
-Laska.clusterids
+LaskaCore.clusterids
 ```
 
 ```@docs
-Laska.getcluster
+LaskaCore.getcluster
 ```
 
 ```@docs
-Laska.clustervector
+LaskaCore.clustervector
 ```
 
 ```@docs
-Laska.getmeta
+LaskaCore.getmeta
 ```
 
 ```@docs
-Laska.triggertimes
+LaskaCore.triggertimes
 ```
 
 ```@docs
-Laska.ntrigs
+LaskaCore.ntrigs
 ```
 
 ### AbstractCluster
 
 ```@docs
-Laska.AbstractCluster{T}
+LaskaCore.AbstractCluster{T}
 ```
 
 ##### Interfaces
@@ -51,39 +51,39 @@ Laska.AbstractCluster{T}
 The following functions provide interfaces to all structs that are children of [`Laska.AbstractCluster`](@ref).
 
 ```@docs
-Laska.id
-Laska.nspikes
-Laska.info
-Laska.spiketimes
+LaskaCore.id
+LaskaCore.nspikes
+LaskaCore.info
+LaskaCore.spiketimes
 ```
 ## Concrete types
 
 ### "Experiment" wrappers
 
-This section descrives concrete types for holding entire experiments including their clusters and metadata.
+This section describes concrete types for holding entire experiments including their clusters and metadata.
 
 #### PhyOutput
 
 ```@docs
-Laska.PhyOutput
+LaskaCore.PhyOutput
 ```
 
 #### RelativeSpikes
 
 ```@docs
-Laska.RelativeSpikes
+LaskaCore.RelativeSpikes
 ```
 
 ##### Interfaces
 
-Interfaces only for use with [`Laska.RelativeSpikes`](@ref).
+Interfaces only for use with [`LaskaCore.RelativeSpikes`](@ref).
 
 ```@docs
-Laska.relativespecs
+LaskaCore.relativespecs
 ```
 
 ```@docs
-Laska.stimtimes
+LaskaCore.stimtimes
 ```
 
 ### Single cluster wrappers
@@ -91,11 +91,11 @@ Laska.stimtimes
 #### Cluster
 
 ```@docs
-Laska.Cluster
+LaskaCore.Cluster
 ```
 
 #### RelativeCluster
 
 ```@docs
-Laska.RelativeCluster
+LaskaCore.RelativeCluster
 ```

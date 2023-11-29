@@ -5,5 +5,5 @@ This section covers functions which filters clusters or spikes in some way.
 ### By depth
 
 ```@docs
-Laska.spikesatdepth
+LaskaCore.spikesatdepth
 ```

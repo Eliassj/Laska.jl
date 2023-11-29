@@ -5,5 +5,5 @@
 ### Frequency by depth
 
 ```@docs
-frequencybydepthplot
+LaskaPlot.frequencybydepthplot
 ```
