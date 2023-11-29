@@ -14,7 +14,7 @@ LaskaCore.AbstractExperiment{T}
 
 ##### Interfaces
 
-The following functions provide interfaces to all structs that are children of [`AbstractExperiment`](@ref).
+The following functions provide interfaces to all structs that are children of [`LaskaCore.AbstractExperiment`](@ref).
 
 ```@docs
 LaskaCore.clusterids
