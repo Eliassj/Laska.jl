@@ -1,7 +1,7 @@
 # Importing data processed in Phy
 
-Importing Phy output data is done using [`Laska.importphy`](@ref). This will return a
-[`Laska.PhyOutput`](@ref) struct.
+Importing Phy output data is done using [`LaskaCore.importphy`](@ref). This will return a
+[`LaskaCore.PhyOutput`](@ref) struct.
 
 #### Basic usage
 
@@ -40,7 +40,7 @@ Currently, only 1 of these is *required*:\
 
 Other arguments are optional and include:\
 `glxdir` -- Directory containing meta information from spikeGLX (*.meta). The metafile is
-parsed to a Dict and may be retrieved using [`Laska.getmeta`](@ref)\
+parsed to a Dict and may be retrieved using [`LaskaCore.getmeta`](@ref)\
 `triggerpath` -- Direct path to a .csv or .bin file exported from spikeGLX containing a
 single channel.
 
