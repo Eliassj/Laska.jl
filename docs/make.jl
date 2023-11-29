@@ -2,7 +2,7 @@ using Pkg
 
 Pkg.add("Documenter")
 
-using Documenter, Laska
+using Documenter, Laska, LaskaCore, LaskaStats, LaskaPlot
 
 
 
