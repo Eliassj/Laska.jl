@@ -23,13 +23,13 @@ Once `LaskaRegistry` has been added, the package(s) may be added like so:
 Add all functionality:
 
 ```@repl
-] add Laska
+Pkg.add("Laska")
 ```
 
 ...or add only the functionality you need:
 
 ```@repl
-] add LaskaCore
-] add LaskaStats
-] add LaskaPlot # Currently not functionally different from adding Laska.
+Pkg.add("LaskaCore")
+Pkg.add("LaskaStats")
+Pkg.add("LaskaPlot") # Currently not functionally different from adding Laska.
 ```
