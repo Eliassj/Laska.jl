@@ -26,7 +26,7 @@ Add all functionality:
 ] add Laska
 ```
 
-...or add only the functionality you need.
+...or add only the functionality you need:
 
 ```@repl
 ] add LaskaCore
