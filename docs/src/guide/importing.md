@@ -5,47 +5,53 @@ Importing Phy output data is done using [`LaskaCore.importphy`](@ref). This will
 
 #### Basic usage
 
-The method below will import all clusters found in `phydir`. By default, only "good" clusters as found in "cluster\_info.tsv" will be included. Setting `includemua` to `false` will include all clusters.
+The method below will import data found in `"path/to/phy/output"`. By default, only "good" clusters as found in "cluster\_info.tsv" will be included. Setting `includemua` to `false` will include *all* clusters.
 
 ```julia
-importphy(phydir::String, glxdir::String, triggerpath::String; includemua::Bool=false)
+result = importphy("path/to/phy/output")
+```
+
+In order to include spikeGLX metadata and/or a specific channel (exported from spikeGLX) with trigger events paths to these must be included. For spikeGLX metadata, a path to the folder containing the .meta
+file is enough. For triggerchannel, a direct path is required.
+
+```julia
+result = importphy(
+    "path/to/phy/output",
+    "path/to/spikeGLX/meta",
+    "path/to/triggerchannel.bin"
+)
 ```
 
 #### Filtering clusters
 
-These methods below accept `filters` which may be used to exclude clusters based on variables
-found in "cluster\_info.tsv".\
-`filters` are a Tuple with 2 entries:\
-A `Symbol` matching a column in "cluster\_info.tsv".\
-A `Function` returning `true`/`false` applicable to the specified column.
+Clusters may be easily filtered on import based on variable(s) found in "cluster\_info.tsv"
+by including a `filter` as the second argument.
 
-Several `filters` may be included by wrapping them in a Tuple.
+A `filter` is a Tuple with 2 entries:
 
-```julia
-importphy(phydir::String, filters::Tuple{Symbol,Function}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
+- A `Symbol` matching a column in "cluster\_info.tsv".\
+- A `Function` returning `true`/`false` applicable to the specified column.
 
-importphy(phydir::String, filters::Tuple{Tuple{Symbol,Function}}, glxdir::String="", triggerpath::String=""; includemua::Bool=false)
-```
+Several `filters` may be included by wrapping them in an outer Tuple.
 
+###### Example
 
-
-### Arguments
-
-##### Directories
-
-3 directories may be provided in the form of their path(s) as Strings.
-
-Currently, only 1 of these is *required*:\
-`phydir` -- The directory containing the files "cluster_info.tsv", "spike_clusters.npy" & "spike_times.npy"
-
-Other arguments are optional and include:\
-`glxdir` -- Directory containing meta information from spikeGLX (*.meta). The metafile is
-parsed to a Dict and may be retrieved using [`LaskaCore.getmeta`](@ref)\
-`triggerpath` -- Direct path to a .csv or .bin file exported from spikeGLX containing a
-single channel.
+In the example below, we create a filter with a function that will return `true` if `x > 1`
+and apply it to the cluster\_info.tsv variable `:fr`. This will cause only clusters with a
+firerate of more than 1Hz to be included in the `result`.
 
 ```julia
+function f(x)
+    return x>1
+end
 
+filter = (:fr, f)
+
+result = importphy(
+    "path/to/phy/output",
+    filter,
+    "path/to/spikeGLX/meta",
+    "path/to/triggerchannel.bin"
+)
 ```
 
-An optional `triggerpath` pointing directly to a single trigger channel exported from spikeGLX may be supplied.A .csv or .bin is accepted. For long recordings, a .csv file may be noticeably slower to read than a .bin file.
