@@ -5,7 +5,7 @@ All Laska-packages are available from the registry
 
 Adding this registry only has to be done once per Julia installation by running:
 
-```@repl
+```julia
 using Pkg
 
 Pkg.Registry.add(RegistrySpec(url="https://github.com/Laska-jl/LaskaRegistry.git"))
@@ -22,13 +22,13 @@ Once `LaskaRegistry` has been added, the package(s) may be added like so:
 
 Add all functionality:
 
-```@repl
+```julia
 Pkg.add("Laska")
 ```
 
 ...or add only the functionality you need:
 
-```@repl
+```julia
 Pkg.add("LaskaCore")
 Pkg.add("LaskaStats")
 Pkg.add("LaskaPlot") # Currently not functionally different from adding Laska.
