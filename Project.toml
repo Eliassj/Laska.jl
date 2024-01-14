@@ -6,6 +6,7 @@ version = "1.0.1"
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 LaskaCore = "9ad29ce2-7782-4744-ab48-6ef9cc0286bb"
+LaskaML = "d6708ae0-4b55-458f-8870-0c194c171497"
 LaskaPlot = "47311fc3-b5d5-4c44-b326-9386a1fd4d79"
 LaskaStats = "de767ba9-e829-4e7c-bf82-062dc00bf36c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
