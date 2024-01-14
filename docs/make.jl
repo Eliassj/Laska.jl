@@ -21,6 +21,13 @@ makedocs(
             "Summarizing" => "ref/summarize.md",
             "Visualize" => "ref/visualize.md",
             "Helpers" => "ref/helpers.md"
+        ],
+        "LaskaML" => [
+            "Overview" => "guide/mloverview.md",
+            "Reference" => [
+                "ref/hh.md",
+                "ref/test.md"
+            ]
         ]
     ]
 )
