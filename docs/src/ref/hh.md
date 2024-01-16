@@ -2,6 +2,15 @@
 
 ## Hodgkin-Huxley model
 
+### Ion channels
+
+#### Generalized ion channel
+
+```@docs
+LaskaML.hh.HHChannel
+LaskaML.hh.hhchannel
+```
+
 ### α and β functions
 
 #### Generalized version
