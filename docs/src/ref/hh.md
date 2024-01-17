@@ -16,7 +16,7 @@ LaskaML.hh.hhchannel
 #### Generalized version
 
 ```@docs
-LaskaML.ab_generalized
+LaskaML.hh.ab_generalized
 ```
 
 A generalized version of the α/β functions as per [Nelson, M.E. (2004)](http://nelson.beckman.illinois.edu/courses/physl317/part1/Lec3_HHsection.pdf)
