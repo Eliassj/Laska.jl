@@ -8,7 +8,6 @@
 
 ```@docs
 LaskaML.hh.HHChannel
-LaskaML.hh.hhchannel
 ```
 
 ### α and β functions
