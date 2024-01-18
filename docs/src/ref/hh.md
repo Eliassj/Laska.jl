@@ -2,12 +2,44 @@
 
 ## Hodgkin-Huxley model
 
+### Model containers
+
+```@docs
+LaskaML.hh.HHModel
+```
+
+##### Examples
+
 ### Ion channels
 
-#### Generalized ion channel
+#### Generalized ion channel struct
 
 ```@docs
 LaskaML.hh.HHChannel
+LaskaML.hh.hhchannel
+```
+
+###### Interface functions
+
+Functions for accessing the fields of `HHChannel`
+
+```@docs
+LaskaML.hh.id
+LaskaML.hh.conductance
+LaskaML.hh.alpha_m
+LaskaML.hh.beta_m
+LaskaML.hh.m_exponent
+LaskaML.hh.alpha_h
+LaskaML.hh.beta_h
+LaskaML.hh.h_exponent
+```
+
+#### Expression constructors
+
+The following functions are used to turn `HHChannel` structs into `String`s representing their mathematical expression.
+
+```@docs
+LaskaML.hh.parsechannel
 ```
 
 ### α and β functions
