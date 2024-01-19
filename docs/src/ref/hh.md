@@ -16,6 +16,9 @@ LaskaML.hh.HHModel
 
 ```@docs
 LaskaML.hh.HHChannel
+```
+
+```@docs
 LaskaML.hh.hhchannel
 ```
 
