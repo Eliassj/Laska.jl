@@ -1,7 +1,7 @@
 name = "Laska"
 uuid = "70ecd02f-8eb3-408d-af21-2fa0c4fa45fc"
 authors = ["Elias Sjölin"]
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
