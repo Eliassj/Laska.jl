@@ -25,8 +25,7 @@ makedocs(
         "LaskaML" => [
             "Overview" => "guide/mloverview.md",
             "Reference" => [
-                "ref/hh.md",
-                "ref/test.md"
+                "ref/hhref.md",
             ]
         ]
     ]

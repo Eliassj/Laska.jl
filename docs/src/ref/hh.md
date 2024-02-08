@@ -1,4 +1,4 @@
-# Modelling
+# Modeling
 
 ## Hodgkin-Huxley model
 
