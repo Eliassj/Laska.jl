@@ -1,5 +1,5 @@
 # Hodgkin Huxley models
 
 ```@autodocs
-Modules = [LaskaMl.hh]
+Modules = [LaskaML.hh]
 ```
