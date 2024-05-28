@@ -1,0 +1,8 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterVitepress = "4710194d-e776-4893-9690-8d956a29c365"
+Laska = "70ecd02f-8eb3-408d-af21-2fa0c4fa45fc"
+LaskaCore = "9ad29ce2-7782-4744-ab48-6ef9cc0286bb"
+LaskaPlot = "47311fc3-b5d5-4c44-b326-9386a1fd4d79"
+LaskaStats = "de767ba9-e829-4e7c-bf82-062dc00bf36c"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"

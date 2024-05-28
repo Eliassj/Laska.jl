@@ -1,3 +1,0 @@
-# LaskaML overview
-
-To come...

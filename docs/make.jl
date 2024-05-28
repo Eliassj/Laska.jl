@@ -1,12 +1,18 @@
 using Pkg
 
 Pkg.add("Documenter")
+Pkg.add("DocumenterVitepress")
 
-using Documenter, Laska
+using Documenter, Laska, LaskaCore, LaskaStats, LaskaPlot
+using DocumenterVitepress, Unitful
 
 
 makedocs(
+    modules=[LaskaCore, LaskaStats, LaskaPlot, Laska],
     sitename="Laska Documentation",
+    format=MarkdownVitepress(
+        repo="github.com/Laska-jl/Laska.jl.git",
+    ),
     pages=[
         "Home" => "index.md",
         "Guide" => [
@@ -14,20 +20,10 @@ makedocs(
             "guide/importing.md"
         ],
         "Reference" => [
-            "Structs & their interfaces" => "ref/structs.md",
-            "Importing data" => "ref/import.md",
-            "Filter data" => "ref/filters.md",
-            "Trigger events" => "ref/triggers.md",
-            "Summarizing" => "ref/summarize.md",
-            "Visualize" => "ref/visualize.md",
-            "Helpers" => "ref/helpers.md"
+            "ref/core_ref.md",
+            "ref/stat_ref.md",
+            "ref/plot_ref.md",
         ],
-        "LaskaML" => [
-            "Overview" => "guide/mloverview.md",
-            "Reference" => [
-                "ref/hhref.md"
-            ]
-        ]
     ]
 )
 
