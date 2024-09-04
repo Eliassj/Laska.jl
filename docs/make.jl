@@ -32,8 +32,4 @@ makedocs(
 
 deploydocs(
     repo="github.com/Laska-jl/Laska.jl.git",
-    target="build", # this is where Vitepress stores its output
-    devbranch="master",
-    branch="gh-pages",
-    push_preview=true
 )
