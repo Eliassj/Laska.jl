@@ -11,7 +11,9 @@ makedocs(
     modules=[LaskaCore, LaskaStats, LaskaPlot, Laska],
     sitename="Laska Documentation",
     format=DocumenterVitepress.MarkdownVitepress(
-        repo="github.com/Laska-jl/Laska.jl.git",
+        repo="github.com/Laska-jl/Laska.jl",
+        devbranch="master",
+        devurl="dev"
     ),
     pages=[
         "Home" => "index.md",
@@ -31,5 +33,9 @@ makedocs(
 )
 
 deploydocs(
-    repo="github.com/Laska-jl/Laska.jl.git",
+    repo="github.com/Laska-jl/Laska.jl",
+    target="build",
+    devbranch="master",
+    branch="gh-pages",
+    push_preview=false
 )
