@@ -10,14 +10,17 @@ using DocumenterVitepress, Unitful
 makedocs(
     modules=[LaskaCore, LaskaStats, LaskaPlot, Laska],
     sitename="Laska Documentation",
-    format=MarkdownVitepress(
+    format=DocumenterVitepress.MarkdownVitepress(
         repo="github.com/Laska-jl/Laska.jl.git",
     ),
     pages=[
         "Home" => "index.md",
         "Guide" => [
             "guide/install.md",
-            "guide/importing.md"
+            "guide/importing.md",
+            "guide/types.md",
+            "guide/relativespikes.md",
+            "guide/importraw.md"
         ],
         "Reference" => [
             "ref/core_ref.md",
@@ -28,5 +31,9 @@ makedocs(
 )
 
 deploydocs(
-    repo="github.com/Laska-jl/Laska.jl.git"
+    repo="github.com/Laska-jl/Laska.jl.git",
+    target="build", # this is where Vitepress stores its output
+    devbranch="main",
+    branch="gh-pages",
+    push_preview=true
 )
